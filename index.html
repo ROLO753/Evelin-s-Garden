@@ -3,37 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌻 Evelin's Garden - Granja Emocionante</title>
+    <title>🌻 Evelin's Garden - Huerto Vivo y Dinámico</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         @keyframes latido {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
+            50% { transform: scale(1.06); }
         }
         .planta-viva {
             animation: latido 2s ease-in-out infinite;
             transform-origin: bottom center;
         }
 
-        @keyframes saltarMoneda {
-            0% { transform: translateY(0) scale(0.5); opacity: 1; }
-            100% { transform: translateY(-80px) scale(1.4); opacity: 0; }
+        @keyframes volarMariposa {
+            0% { transform: translate(-50px, 20px) rotate(0deg); }
+            50% { transform: translate(150px, -40px) rotate(15deg); }
+            100% { transform: translate(-50px, 20px) rotate(0deg); }
         }
-        .moneda-volando {
-            animation: saltarMoneda 1s ease-out forwards;
+        .mariposa-volando {
+            animation: volarMariposa 8s ease-in-out infinite;
             pointer-events: none;
         }
 
-        @keyframes temblor {
-            0% { transform: translate(0, 0); }
-            20% { transform: translate(-4px, 2px); }
-            40% { transform: translate(4px, -2px); }
-            60% { transform: translate(-2px, -2px); }
-            80% { transform: translate(2px, 2px); }
-            100% { transform: translate(0, 0); }
+        @keyframes caerLluvia {
+            0% { transform: translateY(-20px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(120px); opacity: 0; }
         }
-        .alerta-plaga {
-            animation: temblor 0.4s ease-in-out infinite;
+        .gota-lluvia {
+            animation: caerLluvia 0.8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes estallidoMonedas {
+            0% { transform: translateY(0) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+        }
+        .efecto-monedas {
+            animation: estallidoMonedas 1s ease-out forwards;
+            pointer-events: none;
         }
 
         .parcela-tierra {
@@ -54,17 +62,21 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between overflow-x-hidden select-none font-sans bg-sky-300 text-lg">
 
-    <!-- CABECERA DE ACCIÓN -->
-    <div class="relative bg-gradient-to-b from-sky-400 via-sky-300 to-emerald-200 pt-5 pb-8 px-4 border-b-8 border-amber-900">
+    <!-- CABECERA VIVA -->
+    <div class="relative bg-gradient-to-b from-sky-400 via-sky-300 to-emerald-200 pt-5 pb-8 px-4 border-b-8 border-amber-900 overflow-hidden">
         
-        <header class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 bg-amber-50 border-4 border-amber-800 rounded-3xl px-6 py-4 shadow-xl mb-6">
+        <!-- Mariposas y abejas animadas cruzando el cielo -->
+        <div class="absolute top-6 left-0 text-3xl mariposa-volando z-10">🦋</div>
+        <div class="absolute top-12 right-0 text-3xl mariposa-volando z-10" style="animation-delay: 3s; animation-duration: 10s;">🐝</div>
+
+        <header class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 bg-amber-50 border-4 border-amber-800 rounded-3xl px-6 py-4 shadow-xl mb-6 relative z-20">
             <div class="flex items-center gap-4 text-center md:text-left">
-                <span class="text-5xl">🌻</span>
+                <span class="text-5xl animate-bounce">🌻</span>
                 <div>
                     <h1 class="text-3xl sm:text-4xl font-black text-amber-950 tracking-tight">
-                        EVELIN'S GARDEN: GRANJA ACTIVA
+                        EVELIN'S GARDEN: HUERTO VIVO
                     </h1>
-                    <p class="text-base sm:text-lg font-bold text-emerald-800">¡Cuidado con las plagas y atiende los pedidos rápido!</p>
+                    <p class="text-base sm:text-lg font-bold text-emerald-800">¡Juega el minijuego de riego y cumple los pedidos!</p>
                 </div>
             </div>
 
@@ -79,99 +91,90 @@
             </div>
         </header>
 
-        <!-- CARTEL DE ACCIÓN Y RETOS -->
-        <div id="visual-banner" class="max-w-6xl mx-auto mb-5 bg-amber-100 border-4 border-amber-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all">
+        <!-- CARTEL DE ESTADO -->
+        <div id="visual-banner" class="max-w-6xl mx-auto mb-5 bg-amber-100 border-4 border-amber-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all relative z-20">
             <p id="visual-banner-text" class="text-xl sm:text-2xl font-black text-amber-950">
-                🚀 ¡Juego Activo! Riega rápido, espanta plagas y completa los encargos de la aldea.
+                ✨ ¡Toca una planta para jugar el reto de riego rápido y hacerla crecer al instante!
             </p>
         </div>
 
-        <!-- TABLÓN DE PEDIDOS RÁPIDOS -->
-        <section class="max-w-6xl mx-auto bg-amber-900 border-4 border-amber-950 rounded-3xl p-5 shadow-2xl">
+        <!-- TABLÓN DE PEDIDOS -->
+        <section class="max-w-6xl mx-auto bg-amber-900 border-4 border-amber-950 rounded-3xl p-5 shadow-2xl relative z-20">
             <h2 class="text-amber-100 font-black text-xl uppercase mb-4 flex items-center gap-2">
-                📜 Pedidos Urgentes (¡Pagan el doble al instante!)
+                📜 Pedidos Urgentes de la Aldea
             </h2>
             <div id="orders-container" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </section>
     </div>
 
-    <!-- HUERTO INTERACTIVO -->
+    <!-- HUERTO INTERACTIVO VIVO -->
     <main class="flex-1 py-8 px-4 relative" style="background: linear-gradient(180deg, #4ade80 0%, #22c55e 40%, #15803d 100%);">
         
         <div class="max-w-6xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 bg-amber-950 border-4 border-amber-600 px-6 py-4 rounded-2xl shadow-xl text-white">
             <div class="text-lg sm:text-2xl font-black flex items-center gap-3 flex-wrap justify-center">
-                <span>HERRAMIENTA EN MANO:</span>
-                <span id="active-tool-label" class="bg-amber-400 text-amber-950 px-4 py-1 rounded-xl text-xl sm:text-2xl font-black">💧 REGADERA</span>
+                <span>ESTADO:</span>
+                <span id="active-tool-label" class="bg-amber-400 text-amber-950 px-4 py-1 rounded-xl text-xl sm:text-2xl font-black">🌟 LISTO PARA JUGAR</span>
             </div>
             <button onclick="comprarParcela()" class="bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-black text-base sm:text-lg px-5 py-3 rounded-2xl border-3 border-emerald-800 shadow-lg cursor-pointer">
-                ➕ NUEVA PARCELA (🪙 80)
+                ➕ AMPLIAR HUERTO (🪙 80)
             </button>
         </div>
 
         <div id="farm-grid" class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-64"></div>
     </main>
 
-    <!-- BARRA INFERIOR DE ACCIÓN RÁPIDA -->
-    <footer class="fixed bottom-0 left-0 right-0 z-30 bg-amber-950 border-t-4 border-amber-500 px-3 py-3 shadow-2xl">
-        <div class="max-w-6xl mx-auto flex flex-col gap-3">
+    <!-- VENTANA MODAL PARA EL MINIJUEGO DE RIEGO (GRANDE Y ACCESIBLE) -->
+    <div id="minigame-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-amber-50 border-8 border-amber-700 rounded-3xl p-6 max-w-md w-full text-center shadow-2xl space-y-6">
+            <h3 class="text-3xl font-black text-amber-950">💧 ¡MINIJUEGO DE RIEGO!</h3>
+            <p class="text-lg font-bold text-emerald-800">¡Toca el botón verde justo cuando la barra llegue al centro!</p>
             
-            <div class="flex items-center gap-2 sm:gap-3 overflow-x-auto justify-start sm:justify-center pb-1">
-                <button onclick="seleccionarHerramienta('regar', '💧 REGADERA')" id="btn-regar" class="tool-btn ring-4 ring-amber-300 bg-blue-600 text-white px-4 py-2.5 rounded-2xl flex items-center gap-2 shrink-0 cursor-pointer shadow-lg transform active:scale-95">
-                    <span class="text-3xl">💧</span>
-                    <span class="text-base sm:text-lg font-black uppercase">Regar</span>
-                </button>
-
-                <button onclick="seleccionarHerramienta('abonar', '🍂 ABONO MÁGICO')" id="btn-abonar" class="tool-btn bg-amber-700 text-white px-4 py-2.5 rounded-2xl flex items-center gap-2 shrink-0 cursor-pointer shadow-lg transform active:scale-95">
-                    <span class="text-3xl">🍂</span>
-                    <span class="text-base sm:text-lg font-black uppercase">Abonar (+25%)</span>
-                </button>
-
-                <button onclick="seleccionarHerramienta('plaga', '🐛 ESPANTAR PLAGA')" id="btn-plaga" class="tool-btn bg-rose-600 text-white px-4 py-2.5 rounded-2xl flex items-center gap-2 shrink-0 cursor-pointer shadow-lg transform active:scale-95">
-                    <span class="text-3xl">🐛</span>
-                    <span class="text-base sm:text-lg font-black uppercase">Quitar Gusano</span>
-                </button>
-
-                <button onclick="seleccionarHerramienta('cosechar', '🧺 RECOGER FLORES')" id="btn-cosechar" class="tool-btn bg-emerald-600 text-white px-4 py-2.5 rounded-2xl flex items-center gap-2 shrink-0 cursor-pointer shadow-lg transform active:scale-95">
-                    <span class="text-3xl">🧺</span>
-                    <span class="text-base sm:text-lg font-black uppercase">Cosechar</span>
-                </button>
-
-                <button onclick="seleccionarHerramienta('arrancar', '🪓 PALA')" id="btn-arrancar" class="tool-btn bg-stone-700 text-white px-4 py-2.5 rounded-2xl flex items-center gap-2 shrink-0 cursor-pointer shadow-lg transform active:scale-95">
-                    <span class="text-3xl">🪓</span>
-                    <span class="text-base sm:text-lg font-black uppercase">Limpiar</span>
-                </button>
+            <!-- Barra de Reto -->
+            <div class="w-full bg-stone-300 h-10 rounded-2xl overflow-hidden relative border-4 border-stone-700">
+                <div id="minigame-target" class="absolute top-0 bottom-0 left-1/3 w-1/3 bg-emerald-500 opacity-80 border-x-4 border-emerald-800"></div>
+                <div id="minigame-cursor" class="absolute top-0 bottom-0 w-3 bg-rose-600 transition-all duration-75" style="left: 0%;"></div>
             </div>
 
-            <!-- Semillas -->
-            <div id="seeds-toolbar" class="flex items-center gap-2 sm:gap-3 overflow-x-auto justify-start sm:justify-center pb-1"></div>
+            <button onclick="lanzarAccionMinijuego()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black text-2xl py-4 rounded-2xl border-4 border-emerald-800 shadow-lg cursor-pointer transform active:scale-95">
+                🎯 ¡REGAR AHORA!
+            </button>
+            <button onclick="cerrarMinigame()" class="text-stone-600 font-bold text-sm underline">Cancelar</button>
+        </div>
+    </div>
 
+    <!-- BARRA INFERIOR DE SEMILLAS -->
+    <footer class="fixed bottom-0 left-0 right-0 z-30 bg-amber-950 border-t-4 border-amber-500 px-3 py-3 shadow-2xl">
+        <div class="max-w-6xl mx-auto flex flex-col gap-3">
+            <div id="seeds-toolbar" class="flex items-center gap-2 sm:gap-3 overflow-x-auto justify-start sm:justify-center pb-1"></div>
         </div>
     </footer>
 
     <script>
         const catalogoPlantas = [
-            { tipo: "Margarita", nombre: "Margarita", icono: "🌼", costo: 15, venta: 50, desc: "Crece rápido y alegra el jardín." },
-            { tipo: "Girasol", nombre: "Girasol", icono: "🌻", costo: 35, venta: 110, desc: "Da excelentes ganancias." },
-            { tipo: "Manzanilla", nombre: "Manzanilla", icono: "🌼", costo: 25, venta: 80, desc: "Ideal para té relajante." },
-            { tipo: "Menta", nombre: "Menta", icono: "🌿", costo: 30, venta: 90, desc: "Hierba fresca para infusiones." },
-            { tipo: "Lavanda", nombre: "Lavanda", icono: "🪻", costo: 60, venta: 180, desc: "Aromática y muy cotizada." }
+            { tipo: "Margarita", nombre: "Margarita", icono: "🌼", costo: 15, venta: 50, desc: "Alegre y rápida de cultivar." },
+            { tipo: "Girasol", nombre: "Girasol", icono: "🌻", costo: 35, venta: 110, desc: "Excelente ganancia y gran tamaño." },
+            { tipo: "Manzanilla", nombre: "Manzanilla", icono: "🌼", costo: 25, venta: 80, desc: "Para tés relajantes." },
+            { tipo: "Lavanda", nombre: "Lavanda", icono: "🪻", costo: 60, venta: 180, desc: "Aromática y muy valiosa." }
         ];
 
-        let herramientaActual = "regar";
-
         let gameState = {
-            money: 200,
-            inventario: { Margarita: 0, Girasol: 0, Manzanilla: 0, Menta: 0, Lavanda: 0 },
+            money: 220,
+            inventario: { Margarita: 0, Girasol: 0, Manzanilla: 0, Lavanda: 0 },
             pedidos: [
                 { id: 1, cliente: "👴 Don Mateo", tipo: "Margarita", cantidad: 2, recompensa: 140 },
-                { id: 2, cliente: "👩‍🌾 Doña Rosa", tipo: "Manzanilla", cantidad: 2, recompensa: 200 }
+                { id: 2, cliente: "👩‍🌾 Doña Rosa", tipo: "Manzanilla", cantidad: 1, recompensa: 160 }
             ],
             parcelas: [
-                { id: 1, tipo: "Margarita", agua: 80, progreso: 20, plaga: false },
-                { id: 2, tipo: "Girasol", agua: 50, progreso: 80, plaga: true }, // Empieza con plaga para que lo resuelva
-                { id: 3, tipo: null, agua: 0, progreso: 0, plaga: false }
+                { id: 1, tipo: "Margarita", progreso: 30 },
+                { id: 2, tipo: "Girasol", progreso: 70 },
+                { id: 3, tipo: null, progreso: 0 }
             ]
         };
+
+        let parcelaSeleccionadaMinijuego = null;
+        let cursorPos = 0;
+        let minigameInterval = null;
+        let direccionCursor = 1;
 
         function avisar(msg, tipo = "info") {
             const banner = document.getElementById('visual-banner');
@@ -182,23 +185,12 @@
             else banner.className = "max-w-6xl mx-auto mb-5 bg-amber-100 border-4 border-amber-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all";
         }
 
-        function seleccionarHerramienta(codigo, etiqueta) {
-            herramientaActual = codigo;
-            document.getElementById('active-tool-label').innerText = etiqueta;
-            avisar(`Herramienta activa: ${etiqueta}. ¡Toca una parcela de tierra!`);
-            
-            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('ring-4', 'ring-amber-300', 'scale-105'));
-            const activo = document.getElementById(`btn-${codigo.replace(':', '-')}`);
-            if (activo) activo.classList.add('ring-4', 'ring-amber-300', 'scale-105');
-        }
-
-        // Animación de monedas flotantes al ganar dinero
         function animarMonedas(index) {
             const parcela = document.getElementById(`parcela-${index}`);
             if(!parcela) return;
             const moneda = document.createElement('div');
-            moneda.className = "absolute text-3xl font-black text-amber-300 moneda-volando z-30 top-1/2 left-1/2";
-            moneda.innerText = "🪙 +💰";
+            moneda.className = "absolute text-3xl font-black text-amber-300 efecto-monedas z-30 top-1/2 left-1/2";
+            moneda.innerText = "🪙 +✨";
             parcela.appendChild(moneda);
             setTimeout(() => moneda.remove(), 1000);
         }
@@ -206,84 +198,77 @@
         function interactuarParcela(index) {
             const p = gameState.parcelas[index];
 
-            // Sembrar
-            if (herramientaActual.startsWith('semilla:')) {
-                const tipoSemilla = herramientaActual.split(':')[1];
-                const info = catalogoPlantas.find(c => c.tipo === tipoSemilla);
-
-                if (p.tipo !== null) {
-                    avisar("⚠️ Esa tierra está ocupada. Limpia o cosecha primero.", "alerta");
-                    return;
-                }
-                if (gameState.money < info.costo) {
-                    avisar("⚠️ No tienes suficientes monedas para comprar esta semilla.", "alerta");
-                    return;
-                }
-
-                gameState.money -= info.costo;
-                gameState.parcelas[index] = { id: p.id, tipo: info.tipo, agua: 100, progreso: 0, plaga: false };
-                renderizarTodo();
-                avisar(`🌱 ¡Sembraste ${info.nombre}! ¡Atento a que crezca!`, "exito");
-                return;
-            }
-
+            // Si está vacía, sembrar automáticamente
             if (p.tipo === null) {
-                avisar("👇 Elige una semilla abajo para plantar en esta tierra vacía.", "info");
+                // Selecciona la primera semilla disponible o abre selector rápido
+                sembrarPlantaRapida(index);
                 return;
             }
 
-            // Quitar plaga con herramienta de gusano
-            if (herramientaActual === 'plaga') {
-                if (p.plaga) {
-                    p.plaga = false;
-                    p.progreso = Math.min(100, p.progreso + 15); // ¡Recompensa por limpiar rápido!
-                    renderizarTodo();
-                    avisar("🐛 ¡Eliminaste la plaga con éxito! La planta recuperó fuerza.", "exito");
-                } else {
-                    avisar("✨ Esta planta está limpia, no tiene plagas.", "info");
-                }
-                return;
-            }
-
-            if (herramientaActual === 'arrancar') {
-                gameState.parcelas[index] = { id: p.id, tipo: null, agua: 0, progreso: 0, plaga: false };
-                renderizarTodo();
-                avisar("🪓 Tierra despejada y lista para usar.", "info");
-                return;
-            }
-
-            if (p.plaga) {
-                avisar("🐛 ¡Cuidado! Esta planta tiene un gusano y no crecerá hasta que uses el botón 'Quitar Gusano'.", "alerta");
-                return;
-            }
-
-            // Regar
-            if (herramientaActual === 'regar') {
-                p.agua = 100;
-                p.progreso = Math.min(100, p.progreso + 25); // ¡Regar da un impulso inmediato de crecimiento!
-                renderizarTodo();
-                avisar("💧 ¡Riego exitoso! La planta creció un 25% al instante.", "exito");
-            }
-            // Abonar
-            else if (herramientaActual === 'abonar') {
-                p.progreso = Math.min(100, p.progreso + 40); // ¡Abono da un gran salto!
-                renderizarTodo();
-                avisar("🍂 ¡Abono mágico aplicado! Gran salto en el crecimiento.", "exito");
-            }
-            // Cosechar
-            else if (herramientaActual === 'cosechar') {
-                if (p.progreso < 100) {
-                    avisar("⏳ Aún le falta crecer para poder cosecharla.", "info");
-                    return;
-                }
+            // Si ya creció, cosechar al instante con alegría
+            if (p.progreso >= 100) {
                 const info = catalogoPlantas.find(c => c.tipo === p.tipo);
                 gameState.inventario[p.tipo] = (gameState.inventario[p.tipo] || 0) + 1;
-                
                 animarMonedas(index);
-                gameState.parcelas[index] = { id: p.id, tipo: null, agua: 0, progreso: 0, plaga: false };
+                gameState.parcelas[index] = { id: p.id, tipo: null, progreso: 0 };
                 renderizarTodo();
-                avisar(`🧺 ¡Cosechaste ${info.nombre} con éxito! Guárdala para los pedidos.`, "exito");
+                avisar(`🎉 ¡Cosechaste ${info.nombre} con éxito! Ya está en tu inventario.`, "exito");
+                return;
             }
+
+            // Si está creciendo, abrir el Minijuego de Riego para avanzar de golpe
+            parcelaSeleccionadaMinijuego = index;
+            abrirMinigame();
+        }
+
+        function sembrarPlantaRapida(index) {
+            // Elige la planta más barata o la primera disponible
+            const info = catalogoPlantas[0];
+            if (gameState.money < info.costo) {
+                avisar("⚠️ No tienes suficientes monedas para sembrar.", "alerta");
+                return;
+            }
+            gameState.money -= info.costo;
+            gameState.parcelas[index] = { id: gameState.parcelas.length + 1, tipo: info.tipo, progreso: 10 };
+            renderizarTodo();
+            avisar(`🌱 ¡Sembraste una ${info.nombre}! Toca la planta para jugar y hacerla crecer.`, "exito");
+        }
+
+        // Lógica del Minijuego de Riego
+        function abrirMinigame() {
+            document.getElementById('minigame-modal').classList.remove('hidden');
+            cursorPos = 0;
+            direccionCursor = 1;
+            if(minigameInterval) clearInterval(minigameInterval);
+            
+            minigameInterval = setInterval(() => {
+                cursorPos += direccionCursor * 3;
+                if (cursorPos >= 95 || cursorPos <= 0) {
+                    direccionCursor *= -1;
+                }
+                document.getElementById('minigame-cursor').style.left = `${cursorPos}%`;
+            }, 20);
+        }
+
+        function cerrarMinigame() {
+            clearInterval(minigameInterval);
+            document.getElementById('minigame-modal').classList.add('hidden');
+        }
+
+        function lanzarAccionMinijuego() {
+            clearInterval(minigameInterval);
+            // El objetivo verde está entre 33% y 66%
+            if (cursorPos >= 30 && cursorPos <= 70) {
+                // ¡Éxito total! Crece un 50%
+                gameState.parcelas[parcelaSeleccionadaMinijuego].progreso = Math.min(100, gameState.parcelas[parcelaSeleccionadaMinijuego].progreso + 50);
+                avisar("🎯 ¡RIEGO PERFECTO! La planta dio un gran salto de crecimiento.", "exito");
+            } else {
+                // Acierto parcial
+                gameState.parcelas[parcelaSeleccionadaMinijuego].progreso = Math.min(100, gameState.parcelas[parcelaSeleccionadaMinijuego].progreso + 20);
+                avisar("💧 Riego bueno. ¡Sigue así!", "info");
+            }
+            cerrarMinigame();
+            renderizarTodo();
         }
 
         function entregarPedido(idx) {
@@ -298,7 +283,6 @@
             gameState.inventario[pedido.tipo] -= pedido.cantidad;
             gameState.money += pedido.recompensa;
 
-            // Nuevo pedido sorpresa instantáneo
             const randomPlanta = catalogoPlantas[Math.floor(Math.random() * catalogoPlantas.length)];
             const vecinos = ["👴 Don Mateo", "👩 Doña Rosa", "👧 Sofía", "🧑‍🦰 Lucas"];
             gameState.pedidos[idx] = {
@@ -306,23 +290,23 @@
                 cliente: vecinos[Math.floor(Math.random() * vecinos.length)],
                 tipo: randomPlanta.tipo,
                 cantidad: 1,
-                recompensa: randomPlanta.venta * 2 // ¡Pagan el doble!
+                recompensa: randomPlanta.venta * 2
             };
 
             renderizarTodo();
-            avisar(`🎉 ¡Pedido entregado con éxito! ¡Ganaste 🪙 ${pedido.recompensa} monedas!`, "exito");
+            avisar(`🎉 ¡Pedido entregado! Ganaste 🪙 ${pedido.recompensa} monedas con gran alegría.`, "exito");
         }
 
         function comprarParcela() {
             const costo = 80;
             if (gameState.money < costo) {
-                avisar("⚠️ Te faltan monedas para comprar más terreno.", "alerta");
+                avisar("⚠️ Te faltan monedas para ampliar el terreno.", "alerta");
                 return;
             }
             gameState.money -= costo;
-            gameState.parcelas.push({ id: gameState.parcelas.length + 1, tipo: null, agua: 0, progreso: 0, plaga: false });
+            gameState.parcelas.push({ id: gameState.parcelas.length + 1, tipo: null, progreso: 0 });
             renderizarTodo();
-            avisar("✨ ¡Terreno ampliado con éxito! Tienes más espacio para sembrar.", "exito");
+            avisar("✨ ¡Terreno ampliado! Tienes más espacio para tu huerto vivo.", "exito");
         }
 
         function renderizarPedidos() {
@@ -338,7 +322,7 @@
                         <div>
                             <p class="text-base font-black text-amber-900">${ped.cliente}</p>
                             <p class="text-xl font-black text-stone-900 mt-1">Pide: ${ped.cantidad} ${info.icono} ${info.nombre}</p>
-                            <p class="text-base font-extrabold text-emerald-800 mt-1">Tienes en inventario: ${tienes}</p>
+                            <p class="text-base font-extrabold text-emerald-800 mt-1">En inventario: ${tienes}</p>
                         </div>
                         <button onclick="entregarPedido(${idx})" class="w-full ${listo ? 'bg-emerald-500 hover:bg-emerald-400 text-emerald-950 cursor-pointer animate-pulse' : 'bg-stone-300 text-stone-600'} font-black text-lg py-2.5 rounded-xl border-2 border-stone-800 transition">
                             ${listo ? `✅ ENTREGAR YA (+🪙 ${ped.recompensa})` : `Faltan flores`}
@@ -352,21 +336,15 @@
             const container = document.getElementById('seeds-toolbar');
             container.innerHTML = '';
             catalogoPlantas.forEach(planta => {
-                const btnId = `btn-semilla-${planta.tipo}`;
-                const esActiva = herramientaActual === `semilla:${planta.tipo}`;
                 const tienes = gameState.inventario[planta.tipo] || 0;
-
                 container.innerHTML += `
-                    <button onclick="seleccionarHerramienta('semilla:${planta.tipo}', '${planta.icono} ${planta.nombre.toUpperCase()}')" 
-                            id="${btnId}" 
-                            class="tool-btn ${esActiva ? 'ring-4 ring-amber-300 scale-105' : ''} bg-emerald-800 border-2 border-emerald-400 text-white px-4 py-2.5 rounded-2xl flex items-center gap-3 shrink-0 cursor-pointer shadow">
+                    <div class="bg-emerald-800 border-2 border-emerald-400 text-white px-4 py-2.5 rounded-2xl flex items-center gap-3 shrink-0 shadow">
                         <span class="text-3xl">${planta.icono}</span>
                         <div class="text-left">
-                            <p class="text-base font-black leading-tight">${planta.nombre}</p>
-                            <p class="text-xs font-bold text-amber-200">${planta.desc}</p>
-                            <p class="text-sm font-black text-amber-300 mt-0.5">🪙 ${planta.costo} | Tienes: ${tienes}</p>
+                            <p class="text-base font-black leading-tight">${planta.nombre} (🪙 ${planta.costo})</p>
+                            <p class="text-sm font-black text-amber-300">Tienes almacenadas: ${tienes}</p>
                         </div>
-                    </button>
+                    </div>
                 `;
             });
         }
@@ -377,48 +355,27 @@
             grid.innerHTML = '';
 
             gameState.parcelas.forEach((p, index) => {
-                const estaHumeda = p.agua > 40;
-                const claseTierra = estaHumeda ? 'parcela-tierra parcela-humeda' : 'parcela-tierra';
-                const tienePlaga = p.plaga;
-
                 if (!p.tipo) {
                     grid.innerHTML += `
                         <div id="parcela-${index}" onclick="interactuarParcela(${index})" 
-                             class="${claseTierra} rounded-3xl h-64 border-4 border-amber-950 flex flex-col items-center justify-center cursor-pointer p-4 text-center relative shadow-xl">
+                             class="parcela-tierra rounded-3xl h-64 border-4 border-amber-950 flex flex-col items-center justify-center cursor-pointer p-4 text-center relative shadow-xl hover:brightness-110 transition">
                             <span class="text-5xl opacity-50 mb-2">🕳️</span>
-                            <span class="text-xl font-black text-amber-100 bg-black/50 px-4 py-1.5 rounded-xl">Tierra Vacía (Toca para Sembrar)</span>
+                            <span class="text-xl font-black text-amber-100 bg-black/50 px-4 py-1.5 rounded-xl">Tierra Fértil (Toca para Sembrar)</span>
                         </div>
                     `;
                 } else {
                     const info = catalogoPlantas.find(c => c.tipo === p.tipo);
                     const madura = p.progreso >= 100;
+                    const visualPlanta = madura ? info.icono : info.brote;
+                    const tamanoVisual = madura ? "text-8xl drop-shadow-xl" : "text-6xl";
 
-                    let visualPlanta = info.brote;
-                    let tamanoVisual = "text-6xl";
-
-                    if (tienePlaga) {
-                        visualPlanta = "🐛🥀";
-                        tamanoVisual = "text-6xl alerta-plaga";
-                    } else if (madura) {
-                        visualPlanta = info.icono;
-                        tamanoVisual = "text-8xl drop-shadow-xl";
-                    } else if (p.progreso >= 50) {
-                        visualPlanta = info.media;
-                        tamanoVisual = "text-7xl";
-                    }
-
-                    let estadoTexto = "";
-                    if (tienePlaga) {
-                        estadoTexto = `<span class="bg-rose-600 text-white text-base font-black px-3 py-1 rounded-xl border-2 border-white animate-bounce">🐛 ¡TIENE GUSANO!</span>`;
-                    } else if (madura) {
-                        estadoTexto = `<span class="bg-amber-400 text-amber-950 text-base font-black px-3 py-1 rounded-xl border-2 border-amber-950 animate-bounce">🧺 ¡LISTA PARA COSECHAR!</span>`;
-                    } else {
-                        estadoTexto = `<span class="bg-emerald-700 text-white text-sm font-black px-3 py-1 rounded-xl">¡Toca para avanzar!</span>`;
-                    }
+                    let estadoTexto = madura 
+                        ? `<span class="bg-amber-400 text-amber-950 text-base font-black px-3 py-1 rounded-xl border-2 border-amber-950 animate-bounce">🧺 ¡TOCA PARA COSECHAR!</span>`
+                        : `<span class="bg-emerald-700 text-white text-sm font-black px-3 py-1 rounded-xl animate-pulse">💧 ¡Toca para regar y crecer!</span>`;
 
                     grid.innerHTML += `
                         <div id="parcela-${index}" onclick="interactuarParcela(${index})" 
-                             class="${claseTierra} rounded-3xl h-64 border-4 ${madura ? 'border-amber-300' : 'border-amber-950'} flex flex-col items-center justify-between p-4 cursor-pointer relative shadow-xl">
+                             class="parcela-tierra parcela-humeda rounded-3xl h-64 border-4 ${madura ? 'border-amber-300' : 'border-amber-950'} flex flex-col items-center justify-between p-4 cursor-pointer relative shadow-xl hover:brightness-110 transition">
                             
                             <div class="w-full flex justify-between items-center">
                                 <span class="text-lg font-black text-white bg-black/60 px-3 py-0.5 rounded-xl">${info.nombre}</span>
@@ -426,7 +383,7 @@
                             </div>
 
                             <div class="flex-1 flex items-center justify-center my-1">
-                                <span class="${tamanoVisual} ${tienePlaga ? '' : 'planta-viva'} select-none">
+                                <span class="${tamanoVisual} ${madura ? '' : 'planta-viva'} select-none">
                                     ${visualPlanta}
                                 </span>
                             </div>
@@ -440,7 +397,6 @@
                                     <div class="bg-emerald-400 h-3 transition-all duration-300" style="width: ${p.progreso}%"></div>
                                 </div>
                             </div>
-
                         </div>
                     `;
                 }
@@ -452,17 +408,6 @@
             renderizarSemillas();
             renderizarHuerto();
         }
-
-        // Evento sorpresa aleatorio: Cada 20 segundos puede aparecer una plaga sorpresa en una planta
-        setInterval(() => {
-            const parcelasConPlanta = gameState.parcelas.filter(p => p.tipo !== null && !p.plaga && p.progreso < 100);
-            if (parcelasConPlanta.length > 0 && Math.random() > 0.4) {
-                const aleatoria = parcelasConPlanta[Math.floor(Math.random() * parcelasConPlanta.length)];
-                aleatoria.plaga = true;
-                renderizarHuerto();
-                avisar("⚠️ ¡Alerta! ¡Un gusano atacó una de tus plantas! Usa el botón rojo 'Quitar Gusano'.", "alerta");
-            }
-        }, 20000);
 
         renderizarTodo();
     </script>

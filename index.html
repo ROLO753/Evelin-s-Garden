@@ -1,514 +1,577 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌻 Evelin's Garden - El Jardín Vivo de la Abuela</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Evelin's Garden</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        @keyframes latido {
-            0%, 100% { transform: scale(1) rotate(-1deg); }
-            50% { transform: scale(1.07) rotate(1deg); }
+        * {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            touch-action: manipulation;
         }
-        .planta-viva {
-            animation: latido 2.2s ease-in-out infinite;
+        html, body {
+            width: 100%;
+            height: 100dvh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #1a2e1a;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Textura de césped estilo juego móvil */
+        .game-world {
+            background-color: #4ade80;
+            background-image: 
+                radial-gradient(#22c55e 15%, transparent 16%),
+                radial-gradient(#86efac 10%, transparent 11%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            box-shadow: inset 0 0 60px rgba(6, 78, 59, 0.45);
+        }
+
+        /* Parcela 2.5D con profundidad */
+        .plot-3d {
+            background: linear-gradient(145deg, #78350f, #451a03);
+            box-shadow: 
+                0 6px 0 #290f02,
+                0 10px 15px rgba(0,0,0,0.4),
+                inset 0 2px 4px rgba(255,255,255,0.15);
+            transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .plot-3d:active {
+            transform: translateY(4px) scale(0.96);
+            box-shadow: 0 2px 0 #290f02, 0 4px 8px rgba(0,0,0,0.4);
+        }
+        .plot-wet {
+            background: linear-gradient(145deg, #451a03, #270e02);
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(-4deg) scale(1); }
+            50% { transform: rotate(4deg) scale(1.06); }
+        }
+        .plant-sway {
+            animation: sway 2.4s ease-in-out infinite;
             transform-origin: bottom center;
         }
 
-        @keyframes flotarMariposa {
+        @keyframes popFloat {
+            0% { transform: translate(-50%, 0) scale(0.5); opacity: 1; }
+            70% { transform: translate(-50%, -45px) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -65px) scale(1); opacity: 0; }
+        }
+        .float-particle {
+            animation: popFloat 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            pointer-events: none;
+        }
+
+        @keyframes flyAround {
             0% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(60px, -25px) rotate(12deg); }
-            66% { transform: translate(-50px, -10px) rotate(-12deg); }
+            25% { transform: translate(80px, -40px) rotate(15deg); }
+            50% { transform: translate(140px, 20px) rotate(-10deg); }
+            75% { transform: translate(40px, 50px) rotate(20deg); }
             100% { transform: translate(0, 0) rotate(0deg); }
         }
-        .mariposa-dorada {
-            animation: flotarMariposa 5s ease-in-out infinite;
-            cursor: pointer;
-            filter: drop-shadow(0 0 10px gold);
-        }
-
-        @keyframes saltarPremio {
-            0% { transform: translate(-50%, 0) scale(0.6); opacity: 1; }
-            100% { transform: translate(-50%, -100px) scale(1.6); opacity: 0; }
-        }
-        .premio-flotante {
-            animation: saltarPremio 1.3s ease-out forwards;
+        .ambient-bug {
+            animation: flyAround 12s ease-in-out infinite;
             pointer-events: none;
         }
 
-        @keyframes nubePasa {
-            0% { transform: translateX(-180px); }
-            100% { transform: translateX(110vw); }
-        }
-        .nube-magica {
-            animation: nubePasa 11s linear forwards;
-            pointer-events: none;
-        }
-
-        @keyframes caerConfeti {
-            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-        .confeti {
-            position: fixed;
-            top: -30px;
-            z-index: 50;
-            font-size: 2rem;
-            pointer-events: none;
-            animation: caerConfeti 2.5s ease-in forwards;
-        }
-
-        @keyframes caminarGato {
-            0%, 100% { transform: translateX(0) scaleX(1); }
-            48% { transform: translateX(140px) scaleX(1); }
-            50% { transform: translateX(140px) scaleX(-1); }
-            98% { transform: translateX(0) scaleX(-1); }
-        }
-        .gato-paseando {
-            animation: caminarGato 16s ease-in-out infinite;
-            cursor: pointer;
-        }
-
-        .parcela-tierra {
-            background-color: #78350f;
-            background-image: radial-gradient(#92400e 15%, transparent 16%),
-                              radial-gradient(#451a03 15%, transparent 16%);
-            background-size: 28px 28px;
-            background-position: 0 0, 14px 14px;
-            box-shadow: inset 0 8px 14px rgba(0,0,0,0.6), 0 6px 0 #451a03;
-        }
-
-        .parcela-humeda {
-            background-color: #451a03;
-            background-image: radial-gradient(#78350f 15%, transparent 16%),
-                              radial-gradient(#290f02 15%, transparent 16%);
-        }
+        /* Ocultar barra de scroll en el dock */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between overflow-x-hidden select-none font-sans bg-sky-300 text-lg">
+<body class="flex flex-col justify-between game-world relative">
 
-    <!-- CABECERA -->
-    <div class="relative bg-gradient-to-b from-sky-400 via-sky-300 to-emerald-200 pt-5 pb-8 px-4 border-b-8 border-amber-900 overflow-hidden">
+    <!-- ENTORNO AMBIENTAL (Cielo superior sutil + Cerca + Bichos vivos) -->
+    <div class="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-sky-400/90 via-sky-300/40 to-transparent pointer-events-none z-0"></div>
+    <div class="absolute top-16 left-6 text-2xl ambient-bug z-10">🦋</div>
+    <div class="absolute top-28 right-12 text-xl ambient-bug z-10" style="animation-delay: -5s; animation-duration: 15s;">🐝</div>
+
+    <!-- HUD SUPERIOR FLOTANTE (Estilo App Nativa) -->
+    <header class="relative z-20 px-3 pt-3 flex items-center justify-between gap-2">
         
-        <!-- Nube Mágica -->
-        <div id="nube-container" class="absolute top-3 left-0 text-6xl z-20 hidden">
-            ☁️🌧️✨
+        <!-- Nivel y XP -->
+        <div class="flex items-center gap-2 bg-slate-900/85 backdrop-blur-md border-2 border-amber-400/60 rounded-full pl-1.5 pr-3.5 py-1 shadow-lg">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center font-black text-slate-950 text-sm shadow">
+                <span id="hud-level">1</span>
+            </div>
+            <div class="w-16">
+                <div class="flex justify-between text-[10px] font-bold text-amber-200 leading-none mb-1">
+                    <span>NVL</span>
+                    <span id="hud-xp-text">0/100</span>
+                </div>
+                <div class="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                    <div id="hud-xp-bar" class="h-full bg-amber-400 transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
         </div>
 
-        <header class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 bg-amber-50 border-4 border-amber-800 rounded-3xl px-6 py-4 shadow-xl mb-5 relative z-30">
-            <div class="flex items-center gap-4 text-center md:text-left">
-                <span class="text-5xl animate-bounce">🌻</span>
-                <div>
-                    <h1 class="text-3xl sm:text-4xl font-black text-amber-950 tracking-tight">
-                        EVELIN'S GARDEN
-                    </h1>
-                    <p class="text-base sm:text-lg font-bold text-emerald-800">Elige una semilla abajo y toca la tierra para plantar</p>
-                </div>
-            </div>
+        <!-- Botón Flotante de Pedidos con Notificación -->
+        <button onclick="toggleOrdersModal(true)" class="relative bg-amber-500 active:scale-95 transition border-2 border-amber-200 text-slate-950 font-black text-xs px-3.5 py-2 rounded-full shadow-lg flex items-center gap-1.5">
+            <span class="text-base">📜</span>
+            <span>PEDIDOS</span>
+            <span id="orders-badge" class="hidden absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border border-white animate-bounce">!</span>
+        </button>
 
-            <div class="flex items-center gap-4">
-                <div class="bg-amber-200 border-4 border-amber-600 px-6 py-2.5 rounded-2xl flex items-center gap-3 shadow-inner">
-                    <span class="text-4xl">🪙</span>
-                    <div>
-                        <p class="text-xs font-black uppercase text-amber-900">MONEDAS</p>
-                        <p id="player-money" class="text-3xl font-black text-amber-950">300</p>
-                    </div>
-                </div>
-            </div>
-        </header>
+        <!-- Monedas -->
+        <div class="flex items-center gap-1.5 bg-slate-900/85 backdrop-blur-md border-2 border-amber-400/60 rounded-full px-3.5 py-1.5 shadow-lg">
+            <span class="text-base">🪙</span>
+            <span id="hud-money" class="font-black text-amber-300 text-sm tracking-wide">250</span>
+        </div>
+    </header>
 
-        <!-- CARTEL GIGANTE DE AVISOS VISUALES -->
-        <div id="visual-banner" class="max-w-6xl mx-auto mb-5 bg-amber-100 border-4 border-amber-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all relative z-30">
-            <p id="visual-banner-text" class="text-xl sm:text-2xl font-black text-amber-950">
-                ✨ ¡Bienvenida! Toca una semilla abajo para elegir qué plantar.
-            </p>
+    <!-- NOTIFICACIÓN TOAST FLOTANTE (No ocupa espacio fijo) -->
+    <div id="toast-container" class="fixed top-16 inset-x-0 flex justify-center pointer-events-none z-40 px-4"></div>
+
+    <!-- TABLERO CENTRAL DEL HUERTO (Centrado, sin scroll, 2.5D) -->
+    <main class="flex-1 flex flex-col items-center justify-center px-4 relative z-10">
+        
+        <!-- Cerca decorativa superior -->
+        <div class="w-full max-w-md flex justify-between px-4 text-amber-900/60 text-xs font-black tracking-widest mb-2">
+            <span>🌲 🪵🪵🪵 🌲</span>
+            <span id="weather-pill" class="bg-black/25 text-white px-2.5 py-0.5 rounded-full backdrop-blur-xs">☀️ Soleado</span>
+            <span>🌲 🪵🪵🪵 🌲</span>
         </div>
 
-        <!-- TABLÓN DE PEDIDOS -->
-        <section class="max-w-6xl mx-auto bg-amber-900 border-4 border-amber-950 rounded-3xl p-5 shadow-2xl relative z-30">
-            <h2 class="text-amber-100 font-black text-xl uppercase mb-4 flex items-center gap-2">
-                📜 Pedidos de los Vecinos (Pagan el doble)
-            </h2>
-            <div id="orders-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        </section>
-    </div>
+        <!-- Grid de Parcelas -->
+        <div id="farm-grid" class="w-full max-w-md grid grid-cols-3 gap-3 sm:gap-4 p-3 bg-emerald-800/30 rounded-3xl border-2 border-emerald-950/20 backdrop-blur-[1px]">
+            <!-- Generado por JS -->
+        </div>
 
-    <!-- HUERTO PRINCIPAL -->
-    <main class="flex-1 py-6 px-4 relative" style="background: linear-gradient(180deg, #4ade80 0%, #22c55e 40%, #15803d 100%);">
+        <!-- Botón rápido para comprar parcela si hay espacio -->
+        <button id="btn-expand" onclick="comprarParcela()" class="mt-3 bg-slate-900/80 hover:bg-slate-900 active:scale-95 text-emerald-300 border border-emerald-500/50 text-xs font-black px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 transition">
+            <span>➕ Expandir tierra</span>
+            <span class="text-amber-300">🪙 100</span>
+        </button>
+    </main>
+
+    <!-- DOCK INFERIOR ESTILO JUEGO MÓVIL -->
+    <footer class="relative z-20 bg-slate-950/90 backdrop-blur-md border-t border-white/15 pt-2 pb-4 px-2 rounded-t-3xl shadow-[0_-10px_25px_rgba(0,0,0,0.4)]">
         
-        <!-- Barra de estado y mascota interactiva -->
-        <div class="max-w-6xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 bg-amber-950 border-4 border-amber-600 px-6 py-4 rounded-2xl shadow-xl text-white">
-            <div class="flex items-center gap-4">
-                <div onclick="acariciarGato()" title="Toca a Michi" class="text-4xl gato-paseando bg-emerald-800/80 px-3 py-1 rounded-2xl border-2 border-emerald-400">
-                    🐈
-                </div>
-                <div class="text-lg sm:text-xl font-black">
-                    <span>SEMILLA ELEGIDA: </span>
-                    <span id="selected-seed-label" class="bg-amber-400 text-amber-950 px-3 py-1 rounded-xl">🌼 Margarita</span>
-                </div>
-            </div>
-            
-            <button onclick="comprarParcela()" class="bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-black text-base sm:text-lg px-5 py-3 rounded-2xl border-3 border-emerald-800 shadow-lg cursor-pointer">
-                ➕ MÁS TIERRA (🪙 80)
+        <!-- Fila 1: Herramientas de Acción Rápida -->
+        <div class="flex justify-center gap-2 mb-2.5">
+            <button onclick="setTool('water')" id="tool-water" class="tool-btn ring-2 ring-amber-400 bg-sky-600 text-white px-3.5 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black shadow active:scale-95 transition">
+                <span class="text-base">💧</span> Regar
+            </button>
+            <button onclick="setTool('fertilize')" id="tool-fertilize" class="tool-btn bg-amber-700 text-white px-3.5 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black shadow active:scale-95 transition">
+                <span class="text-base">⚡</span> Abono
+            </button>
+            <button onclick="setTool('shovel')" id="tool-shovel" class="tool-btn bg-rose-800 text-white px-3.5 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black shadow active:scale-95 transition">
+                <span class="text-base">🪓</span> Quitar
             </button>
         </div>
 
-        <!-- Cuadrícula del Huerto -->
-        <div id="farm-grid" class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-36"></div>
-    </main>
-
-    <!-- BARRA INFERIOR DE SEMILLAS SELECCIONABLES -->
-    <footer class="fixed bottom-0 left-0 right-0 z-30 bg-amber-950 border-t-4 border-amber-500 px-3 py-3 shadow-2xl">
-        <div class="max-w-6xl mx-auto">
-            <div id="seeds-toolbar" class="flex items-center gap-3 overflow-x-auto justify-start md:justify-center pb-1"></div>
+        <!-- Fila 2: Carrusel Horizontal de Semillas -->
+        <div id="seed-dock" class="flex items-center gap-2 overflow-x-auto no-scrollbar px-2">
+            <!-- Generado por JS -->
         </div>
     </footer>
 
+    <!-- MODAL FLOTANTE DE PEDIDOS (Tipo App de Juego) -->
+    <div id="orders-modal" class="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-amber-50 border-4 border-amber-800 rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl animate-[popFloat_0.2s_ease-out]">
+            <div class="bg-amber-800 px-4 py-3 flex justify-between items-center text-white">
+                <h2 class="font-black text-base flex items-center gap-2">📜 Tablón de Encargos</h2>
+                <button onclick="toggleOrdersModal(false)" class="w-7 h-7 bg-amber-950 rounded-full font-black text-sm flex items-center justify-center">✕</button>
+            </div>
+            <div id="orders-list" class="p-3 space-y-2.5 max-h-[60dvh] overflow-y-auto">
+                <!-- Generado por JS -->
+            </div>
+        </div>
+    </div>
+
     <script>
-        const catalogoPlantas = [
-            { tipo: "Margarita", nombre: "Margarita", icono: "🌼", costo: 15, venta: 50, desc: "Alegre y rápida." },
-            { tipo: "Manzanilla", nombre: "Manzanilla", icono: "🌼", costo: 25, venta: 80, desc: "Té relajante." },
-            { tipo: "Lavanda", nombre: "Lavanda", icono: "🪻", costo: 60, venta: 180, desc: "Aromática y fina." },
-            { tipo: "GirasolGigante", nombre: "Girasol Gigante", icono: "🌻", costo: 100, venta: 350, desc: "¡Flor solar gigante!" },
-            { tipo: "RosaCristal", nombre: "Rosa de Cristal", icono: "🌹", costo: 180, venta: 600, desc: "¡Flor legendaria!" }
+        const CROPS = [
+            { id: 'daisy', name: 'Margarita', icon: '🌼', cost: 15, sell: 40, xp: 15, time: 12, reqLvl: 1 },
+            { id: 'mint', name: 'Menta', icon: '🌿', cost: 25, sell: 65, xp: 22, time: 18, reqLvl: 1 },
+            { id: 'sunflower', name: 'Girasol', icon: '🌻', cost: 45, sell: 115, xp: 35, time: 25, reqLvl: 2 },
+            { id: 'lavender', name: 'Lavanda', icon: '🪻', cost: 75, sell: 190, xp: 50, time: 35, reqLvl: 3 },
+            { id: 'rose', name: 'Rosa', icon: '🌹', cost: 120, sell: 310, xp: 80, time: 45, reqLvl: 4 },
+            { id: 'crystal', name: 'Flor Mística', icon: '💠', cost: 200, sell: 550, xp: 130, time: 60, reqLvl: 5 }
         ];
 
-        let semillaSeleccionada = "Margarita";
-
-        let gameState = {
-            money: 300,
-            inventario: { Margarita: 0, Manzanilla: 0, Lavanda: 0, GirasolGigante: 0, RosaCristal: 0 },
-            pedidos: [
-                { id: 1, cliente: "👴 Don Mateo", tipo: "Margarita", cantidad: 2, recompensa: 140 },
-                { id: 2, cliente: "👩‍🌾 Doña Rosa", tipo: "Lavanda", cantidad: 1, recompensa: 360 }
+        let state = {
+            money: 250,
+            xp: 0,
+            level: 1,
+            activeTool: 'water', // 'water', 'fertilize', 'shovel', 'seed:id'
+            inventory: { daisy: 0, mint: 0, sunflower: 0, lavender: 0, rose: 0, crystal: 0 },
+            plots: [
+                { id: 0, crop: 'daisy', progress: 100, water: 100, event: null },
+                { id: 1, crop: 'mint', progress: 45, water: 70, event: null },
+                { id: 2, crop: null, progress: 0, water: 0, event: 'chest' },
+                { id: 3, crop: null, progress: 0, water: 0, event: null },
+                { id: 4, crop: null, progress: 0, water: 0, event: null },
+                { id: 5, crop: null, progress: 0, water: 0, event: null }
             ],
-            parcelas: [
-                { id: 1, tipo: "Margarita", progreso: 40, evento: null },
-                { id: 2, tipo: "GirasolGigante", progreso: 100, evento: null },
-                { id: 3, tipo: null, progreso: 0, evento: 'cofre' }
+            orders: [
+                { id: 1, client: '🤠 Mateo', crop: 'daisy', qty: 2, reward: 120, xp: 40 },
+                { id: 2, client: '👩‍🌾 Rosa', crop: 'mint', qty: 1, reward: 100, xp: 35 }
             ]
         };
 
-        function cargarJuego() {
-            const saved = localStorage.getItem('evelins_garden_magic_v1');
-            if (saved) {
-                gameState = JSON.parse(saved);
+        function save() {
+            localStorage.setItem('evelins_app_v1', JSON.stringify(state));
+        }
+
+        function load() {
+            const data = localStorage.getItem('evelins_app_v1');
+            if (data) state = JSON.parse(data);
+        }
+
+        function toast(text, colorClass = 'bg-slate-900 text-white border-amber-400') {
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            el.className = `${colorClass} border-2 px-4 py-1.5 rounded-full text-xs font-black shadow-xl transition-all duration-300 transform translate-y-0 opacity-100`;
+            el.innerText = text;
+            container.innerHTML = '';
+            container.appendChild(el);
+            setTimeout(() => {
+                el.classList.add('opacity-0', '-translate-y-3');
+                setTimeout(() => el.remove(), 300);
+            }, 1800);
+        }
+
+        function spawnFloating(plotIdx, text, color = 'text-amber-300') {
+            const plotEl = document.getElementById(`plot-${plotIdx}`);
+            if (!plotEl) return;
+            const badge = document.createElement('div');
+            badge.className = `float-particle absolute top-1/2 left-1/2 font-black text-base ${color} drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] z-30 whitespace-nowrap`;
+            badge.innerText = text;
+            plotEl.appendChild(badge);
+            setTimeout(() => badge.remove(), 850);
+        }
+
+        function addXp(amount) {
+            state.xp += amount;
+            const needed = state.level * 100;
+            if (state.xp >= needed) {
+                state.xp -= needed;
+                state.level++;
+                toast(`🎉 ¡SUBISTE A NIVEL ${state.level}!`, 'bg-amber-400 text-slate-950 border-white');
             }
         }
 
-        function guardarJuego() {
-            localStorage.setItem('evelins_garden_magic_v1', JSON.stringify(gameState));
+        function setTool(tool) {
+            state.activeTool = tool;
+            renderDock();
         }
 
-        function avisar(msg, tipo = "info") {
-            const banner = document.getElementById('visual-banner');
-            const texto = document.getElementById('visual-banner-text');
-            texto.innerText = msg;
-            if(tipo === "exito") banner.className = "max-w-6xl mx-auto mb-5 bg-emerald-100 border-4 border-emerald-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all relative z-30";
-            else if(tipo === "alerta") banner.className = "max-w-6xl mx-auto mb-5 bg-rose-100 border-4 border-rose-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all relative z-30";
-            else banner.className = "max-w-6xl mx-auto mb-5 bg-amber-100 border-4 border-amber-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all relative z-30";
-        }
+        function handlePlotTap(idx) {
+            const p = state.plots[idx];
 
-        function lanzarConfeti() {
-            const iconos = ["🎉", "✨", "🪙", "🌸", "⭐"];
-            for (let i = 0; i < 18; i++) {
-                const el = document.createElement('div');
-                el.className = 'confeti';
-                el.innerText = iconos[Math.floor(Math.random() * iconos.length)];
-                el.style.left = `${Math.random() * 95}vw`;
-                el.style.animationDelay = `${Math.random() * 0.6}s`;
-                document.body.appendChild(el);
-                setTimeout(() => el.remove(), 3000);
+            // 1. Eventos especiales (Cofre o Mariposa) tienen prioridad al tocar
+            if (p.event === 'chest') {
+                p.event = null;
+                const bonus = 50 + (state.level * 15);
+                state.money += bonus;
+                addXp(25);
+                spawnFloating(idx, `+🪙 ${bonus}`, 'text-yellow-300');
+                save(); renderAll();
+                return;
             }
-        }
-
-        function lanzarPremioVisual(index, texto) {
-            const parcela = document.getElementById(`parcela-${index}`);
-            if(!parcela) return;
-            const premio = document.createElement('div');
-            premio.className = "absolute text-3xl font-black text-amber-300 premio-flotante z-30 top-1/2 left-1/2 whitespace-nowrap drop-shadow";
-            premio.innerText = texto;
-            parcela.appendChild(premio);
-            setTimeout(() => premio.remove(), 1300);
-        }
-
-        function seleccionarSemilla(tipo) {
-            semillaSeleccionada = tipo;
-            const info = catalogoPlantas.find(c => c.tipo === tipo);
-            document.getElementById('selected-seed-label').innerText = `${info.icono} ${info.nombre}`;
-            avisar(`Elegiste: ${info.nombre} (${info.desc}). Toca una tierra vacía para sembrarla.`, "info");
-            renderizarSemillas();
-        }
-
-        function acariciarGato() {
-            gameState.money += 10;
-            guardarJuego();
-            renderizarHuerto();
-            avisar("🐈 ¡Michi ronronea feliz! Te encontró 🪙 10 monedas en el césped.", "exito");
-        }
-
-        function interactuarParcela(index) {
-            const p = gameState.parcelas[index];
-
-            // 1. Cofre sorpresa
-            if (p.evento === 'cofre') {
-                p.evento = null;
-                const premioMonedas = 80;
-                gameState.money += premioMonedas;
-                lanzarPremioVisual(index, `🎁 +🪙 ${premioMonedas}`);
-                lanzarConfeti();
-                guardarJuego();
-                renderizarTodo();
-                avisar("🎁 ¡Abriste un cofre sorpresa con 🪙 80 monedas!", "exito");
+            if (p.event === 'butterfly') {
+                p.event = null;
+                state.money += 35;
+                addXp(20);
+                spawnFloating(idx, `🦋 +🪙 35`, 'text-sky-300');
+                save(); renderAll();
                 return;
             }
 
-            // 2. Mariposa dorada
-            if (p.evento === 'mariposa') {
-                p.evento = null;
-                const premioMonedas = 60;
-                gameState.money += premioMonedas;
-                lanzarPremioVisual(index, `🦋 +🪙 ${premioMonedas}`);
-                guardarJuego();
-                renderizarTodo();
-                avisar("🦋 ¡Atrapaste la mariposa dorada y ganaste 🪙 60 monedas!", "exito");
+            // 2. Si está madura, siempre cosecha con un toque sin importar la herramienta
+            if (p.crop && p.progress >= 100) {
+                const info = CROPS.find(c => c.id === p.crop);
+                state.inventory[p.crop] = (state.inventory[p.crop] || 0) + 1;
+                addXp(info.xp);
+                spawnFloating(idx, `+1 ${info.icon}`, 'text-emerald-300');
+                p.crop = null;
+                p.progress = 0;
+                p.water = 0;
+                save(); renderAll();
                 return;
             }
 
-            // 3. Tierra vacía: plantar la semilla elegida
-            if (p.tipo === null) {
-                const info = catalogoPlantas.find(c => c.tipo === semillaSeleccionada);
-                if (gameState.money < info.costo) {
-                    avisar(`⚠️ Te faltan monedas para plantar ${info.nombre}.`, "alerta");
+            // 3. Sembrar si la parcela está vacía y hay semilla seleccionada
+            if (!p.crop) {
+                if (state.activeTool.startsWith('seed:')) {
+                    const cropId = state.activeTool.split(':')[1];
+                    const info = CROPS.find(c => c.id === cropId);
+                    if (state.money < info.cost) {
+                        toast('Monedas insuficientes 🪙', 'bg-rose-600 text-white border-white');
+                        return;
+                    }
+                    state.money -= info.cost;
+                    p.crop = cropId;
+                    p.progress = 5;
+                    p.water = 80;
+                    spawnFloating(idx, `🌱 -🪙${info.cost}`, 'text-white');
+                    save(); renderAll();
+                } else {
+                    toast('Elige una semilla abajo 👇');
+                }
+                return;
+            }
+
+            // 4. Acciones sobre planta en crecimiento
+            if (state.activeTool === 'water') {
+                p.water = 100;
+                p.progress = Math.min(100, p.progress + 20);
+                spawnFloating(idx, '💧 +20%', 'text-sky-300');
+            } else if (state.activeTool === 'fertilize') {
+                if (state.money < 10) {
+                    toast('Abono cuesta 🪙 10', 'bg-rose-600 text-white border-white');
                     return;
                 }
-                gameState.money -= info.costo;
-                p.tipo = info.tipo;
-                p.progreso = 20;
-                lanzarPremioVisual(index, `🌱 ¡Sembrada!`);
-                guardarJuego();
-                renderizarTodo();
-                avisar(`🌱 ¡Sembraste ${info.nombre}! Tócala para regarla y hacerla crecer.`, "exito");
-                return;
+                state.money -= 10;
+                p.progress = Math.min(100, p.progress + 45);
+                spawnFloating(idx, '⚡ +45%', 'text-amber-300');
+            } else if (state.activeTool === 'shovel') {
+                p.crop = null;
+                p.progress = 0;
+                p.water = 0;
+                spawnFloating(idx, '🪓 Limpio', 'text-stone-300');
+            } else if (state.activeTool.startsWith('seed:')) {
+                // Si toca con una semilla sobre una planta creciendo, la riega por comodidad
+                p.water = 100;
+                p.progress = Math.min(100, p.progress + 15);
+                spawnFloating(idx, '💧 +15%', 'text-sky-300');
             }
 
-            // 4. Cosechar si ya llegó al 100%
-            if (p.progreso >= 100) {
-                const info = catalogoPlantas.find(c => c.tipo === p.tipo);
-                gameState.inventario[p.tipo] = (gameState.inventario[p.tipo] || 0) + 1;
-                lanzarPremioVisual(index, `🧺 +1 ${info.icono}`);
-                if (info.tipo === "GirasolGigante" || info.tipo === "RosaCristal") {
-                    lanzarConfeti();
-                }
-                gameState.parcelas[index] = { id: p.id, tipo: null, progreso: 0, evento: null };
-                guardarJuego();
-                renderizarTodo();
-                avisar(`🎉 ¡Cosechaste ${info.nombre}! Entrégala arriba en los pedidos.`, "exito");
-                return;
-            }
-
-            // 5. Regar directamente al tocar
-            p.progreso = Math.min(100, p.progreso + 35);
-            lanzarPremioVisual(index, "💧 ✨ +35%");
-            guardarJuego();
-            renderizarTodo();
-            avisar("💧 ¡Regaste la planta! Creció rápidamente.", "exito");
+            save(); renderAll();
         }
 
-        function entregarPedido(idx) {
-            const pedido = gameState.pedidos[idx];
-            const tienes = gameState.inventario[pedido.tipo] || 0;
+        function deliverOrder(orderIdx) {
+            const ord = state.orders[orderIdx];
+            if ((state.inventory[ord.crop] || 0) < ord.qty) return;
 
-            if (tienes < pedido.cantidad) {
-                avisar(`⚠️ Te faltan flores. Tienes ${tienes} de ${pedido.cantidad}.`, "alerta");
-                return;
-            }
+            state.inventory[ord.crop] -= ord.qty;
+            state.money += ord.reward;
+            addXp(ord.xp);
+            toast(`✅ ¡Entregado! +🪙 ${ord.reward}`, 'bg-emerald-500 text-slate-950 border-white');
 
-            gameState.inventario[pedido.tipo] -= pedido.cantidad;
-            gameState.money += pedido.recompensa;
-            lanzarConfeti();
+            // Nuevo pedido acorde al nivel
+            const unlocked = CROPS.filter(c => c.reqLvl <= state.level);
+            const pick = unlocked[Math.floor(Math.random() * unlocked.length)];
+            const clients = ['🤠 Mateo', '👩‍🌾 Rosa', '👧 Sofía', '🧑‍🍳 Lucas', '🧙‍♂️ Elías'];
+            const qty = Math.floor(Math.random() * 2) + 1;
 
-            const randomPlanta = catalogoPlantas[Math.floor(Math.random() * catalogoPlantas.length)];
-            const vecinos = ["👴 Don Mateo", "👩 Doña Rosa", "👧 Sofía", "🧑‍🦰 Lucas", "👵 Doña Clara"];
-            gameState.pedidos[idx] = {
+            state.orders[orderIdx] = {
                 id: Date.now(),
-                cliente: vecinos[Math.floor(Math.random() * vecinos.length)],
-                tipo: randomPlanta.tipo,
-                cantidad: randomPlanta.costo >= 100 ? 1 : 2,
-                recompensa: randomPlanta.venta * 2
+                client: clients[Math.floor(Math.random() * clients.length)],
+                crop: pick.id,
+                qty: qty,
+                reward: Math.round(pick.sell * qty * 1.5),
+                xp: pick.xp * qty
             };
 
-            guardarJuego();
-            renderizarTodo();
-            avisar(`🎉 ¡Pedido entregado! Ganaste 🪙 ${pedido.recompensa} monedas.`, "exito");
+            save(); renderAll();
         }
 
         function comprarParcela() {
-            const costo = 80;
-            if (gameState.money < costo) {
-                avisar("⚠️ Necesitas 🪙 80 monedas para comprar más tierra.", "alerta");
+            if (state.plots.length >= 12) return;
+            if (state.money < 100) {
+                toast('Necesitas 🪙 100', 'bg-rose-600 text-white border-white');
                 return;
             }
-            gameState.money -= costo;
-            gameState.parcelas.push({ id: gameState.parcelas.length + 1, tipo: null, progreso: 0, evento: 'cofre' });
-            guardarJuego();
-            renderizarTodo();
-            avisar("✨ ¡Compraste más tierra y apareció un cofre sorpresa!", "exito");
+            state.money -= 100;
+            state.plots.push({ id: state.plots.length, crop: null, progress: 0, water: 0, event: 'chest' });
+            save(); renderAll();
         }
 
-        function renderizarPedidos() {
-            const container = document.getElementById('orders-container');
-            container.innerHTML = '';
-            gameState.pedidos.forEach((ped, idx) => {
-                const info = catalogoPlantas.find(c => c.tipo === ped.tipo);
-                const tienes = gameState.inventario[ped.tipo] || 0;
-                const listo = tienes >= ped.cantidad;
+        function toggleOrdersModal(show) {
+            const modal = document.getElementById('orders-modal');
+            if (show) {
+                renderOrders();
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
 
-                container.innerHTML += `
-                    <div class="bg-amber-50 border-4 ${listo ? 'border-emerald-600' : 'border-amber-700'} rounded-2xl p-4 flex flex-col justify-between gap-3 shadow-md">
-                        <div>
-                            <p class="text-base font-black text-amber-900">${ped.cliente}</p>
-                            <p class="text-xl font-black text-stone-900 mt-1">Pide: ${ped.cantidad} ${info.icono} ${info.nombre}</p>
-                            <p class="text-base font-extrabold text-emerald-800 mt-1">Tienes guardadas: ${tienes} de ${ped.cantidad}</p>
+        function renderHUD() {
+            document.getElementById('hud-money').innerText = state.money;
+            document.getElementById('hud-level').innerText = state.level;
+            const needed = state.level * 100;
+            document.getElementById('hud-xp-text').innerText = `${state.xp}/${needed}`;
+            document.getElementById('hud-xp-bar').style.width = `${(state.xp / needed) * 100}%`;
+
+            // Notificación en botón de pedidos si alguno está listo
+            const hasReady = state.orders.some(o => (state.inventory[o.crop] || 0) >= o.qty);
+            const badge = document.getElementById('orders-badge');
+            if (hasReady) badge.classList.remove('hidden');
+            else badge.classList.add('hidden');
+
+            const btnExpand = document.getElementById('btn-expand');
+            if (state.plots.length >= 12) btnExpand.classList.add('hidden');
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('farm-grid');
+            grid.innerHTML = '';
+
+            state.plots.forEach((p, idx) => {
+                const isWet = p.water > 30;
+                const isReady = p.crop && p.progress >= 100;
+                
+                let content = '';
+                let badge = '';
+
+                if (p.event === 'chest') {
+                    content = `<span class="text-4xl animate-bounce">🎁</span>`;
+                    badge = `<span class="absolute -top-2 -right-2 bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded-full shadow">!</span>`;
+                } else if (p.event === 'butterfly') {
+                    content = `<span class="text-4xl animate-pulse">🦋</span>`;
+                } else if (!p.crop) {
+                    content = `<span class="text-xl opacity-20">➕</span>`;
+                } else {
+                    const info = CROPS.find(c => c.id === p.crop);
+                    let sprite = '🌱';
+                    let size = 'text-3xl';
+                    if (isReady) {
+                        sprite = info.icon;
+                        size = 'text-5xl drop-shadow-md';
+                    } else if (p.progress >= 50) {
+                        sprite = '🌿';
+                        size = 'text-4xl';
+                    }
+
+                    content = `
+                        <span class="${size} ${isReady ? 'plant-sway' : ''}">${sprite}</span>
+                        ${!isReady ? `
+                        <div class="w-4/5 h-1.5 bg-black/60 rounded-full overflow-hidden mt-1">
+                            <div class="h-full ${p.water < 25 ? 'bg-sky-400' : 'bg-emerald-400'} transition-all" style="width: ${p.progress}%"></div>
+                        </div>` : ''}
+                    `;
+
+                    if (isReady) {
+                        badge = `<span class="absolute -top-2 -right-2 bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full shadow animate-bounce">🧺</span>`;
+                    } else if (p.water < 25) {
+                        badge = `<span class="absolute -top-2 -right-2 bg-sky-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow animate-pulse">💧</span>`;
+                    }
+                }
+
+                grid.innerHTML += `
+                    <div id="plot-${idx}" onclick="handlePlotTap(${idx})" 
+                         class="plot-3d ${isWet ? 'plot-wet' : ''} aspect-square rounded-2xl border-2 ${isReady ? 'border-amber-400' : 'border-amber-950/80'} flex flex-col items-center justify-center relative cursor-pointer">
+                        ${badge}
+                        ${content}
+                    </div>
+                `;
+            });
+        }
+
+        function renderDock() {
+            // Actualizar botones de herramientas
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('ring-2', 'ring-amber-400', 'scale-105'));
+            const activeBtn = document.getElementById(`tool-${state.activeTool}`);
+            if (activeBtn) activeBtn.classList.add('ring-2', 'ring-amber-400', 'scale-105');
+
+            // Renderizar semillas
+            const dock = document.getElementById('seed-dock');
+            dock.innerHTML = '';
+
+            CROPS.forEach(c => {
+                const locked = state.level < c.reqLvl;
+                const isSelected = state.activeTool === `seed:${c.id}`;
+                const stock = state.inventory[c.id] || 0;
+
+                if (locked) {
+                    dock.innerHTML += `
+                        <div class="bg-slate-900/60 border border-slate-700 px-3 py-2 rounded-2xl flex flex-col items-center min-w-[68px] opacity-50 shrink-0">
+                            <span class="text-xl">🔒</span>
+                            <span class="text-[10px] font-black text-slate-400 mt-0.5">Nvl ${c.reqLvl}</span>
                         </div>
-                        <button onclick="entregarPedido(${idx})" class="w-full ${listo ? 'bg-emerald-500 hover:bg-emerald-400 text-emerald-950 cursor-pointer animate-pulse' : 'bg-stone-300 text-stone-600'} font-black text-lg py-3 rounded-xl border-2 border-stone-800 transition">
-                            ${listo ? `✅ ENTREGAR (+🪙 ${ped.recompensa})` : `Faltan flores (🪙 ${ped.recompensa})`}
+                    `;
+                } else {
+                    dock.innerHTML += `
+                        <button onclick="setTool('seed:${c.id}')" 
+                                class="relative ${isSelected ? 'bg-amber-500 text-slate-950 ring-2 ring-white scale-105' : 'bg-slate-800 text-white border border-slate-600'} px-3 py-1.5 rounded-2xl flex flex-col items-center min-w-[70px] shrink-0 active:scale-95 transition">
+                            ${stock > 0 ? `<span class="absolute -top-1.5 -right-1.5 bg-emerald-500 text-slate-950 text-[10px] font-black px-1.5 rounded-full border border-slate-900">${stock}</span>` : ''}
+                            <span class="text-2xl leading-none">${c.icon}</span>
+                            <span class="text-[11px] font-black mt-1 ${isSelected ? 'text-slate-950' : 'text-amber-300'}">🪙${c.cost}</span>
+                        </button>
+                    `;
+                }
+            });
+        }
+
+        function renderOrders() {
+            const list = document.getElementById('orders-list');
+            list.innerHTML = '';
+
+            state.orders.forEach((ord, idx) => {
+                const info = CROPS.find(c => c.id === ord.crop);
+                const have = state.inventory[ord.crop] || 0;
+                const canDeliver = have >= ord.qty;
+
+                list.innerHTML += `
+                    <div class="bg-white border-2 ${canDeliver ? 'border-emerald-500' : 'border-amber-200'} rounded-2xl p-3 flex items-center justify-between gap-2 shadow-xs">
+                        <div class="flex items-center gap-2.5">
+                            <div class="text-3xl bg-amber-100 w-12 h-12 rounded-xl flex items-center justify-center">${info.icon}</div>
+                            <div>
+                                <p class="text-xs font-black text-amber-900">${ord.client}</p>
+                                <p class="text-sm font-black text-slate-900">${info.name} <span class="${canDeliver ? 'text-emerald-600' : 'text-rose-600'}">(${have}/${ord.qty})</span></p>
+                                <p class="text-[11px] font-bold text-amber-600">+🪙 ${ord.reward} • +${ord.xp} XP</p>
+                            </div>
+                        </div>
+                        <button onclick="deliverOrder(${idx})" 
+                                class="${canDeliver ? 'bg-emerald-500 active:scale-95 text-slate-950 shadow' : 'bg-slate-200 text-slate-400'} font-black text-xs px-3 py-2.5 rounded-xl transition">
+                            ${canDeliver ? 'ENTREGAR' : 'Falta'}
                         </button>
                     </div>
                 `;
             });
         }
 
-        function renderizarSemillas() {
-            const container = document.getElementById('seeds-toolbar');
-            container.innerHTML = '';
-            catalogoPlantas.forEach(planta => {
-                const tienes = gameState.inventario[planta.tipo] || 0;
-                const seleccionada = semillaSeleccionada === planta.tipo;
-
-                container.innerHTML += `
-                    <button onclick="seleccionarSemilla('${planta.tipo}')" 
-                            class="${seleccionada ? 'bg-amber-500 text-amber-950 ring-4 ring-white scale-105' : 'bg-emerald-800 text-white border-2 border-emerald-400'} px-4 py-2.5 rounded-2xl flex items-center gap-3 shrink-0 shadow cursor-pointer transition">
-                        <span class="text-3xl">${planta.icono}</span>
-                        <div class="text-left">
-                            <p class="text-base font-black leading-tight">${planta.nombre} (🪙 ${planta.costo})</p>
-                            <p class="text-xs font-bold ${seleccionada ? 'text-amber-950' : 'text-amber-200'}">${planta.desc}</p>
-                            <p class="text-sm font-black ${seleccionada ? 'text-emerald-950' : 'text-amber-300'}">Cosechadas: ${tienes}</p>
-                        </div>
-                    </button>
-                `;
-            });
-        }
-
-        function renderizarHuerto() {
-            document.getElementById('player-money').innerText = gameState.money;
-            const grid = document.getElementById('farm-grid');
-            grid.innerHTML = '';
-
-            gameState.parcelas.forEach((p, index) => {
-                let badgeEvento = "";
-                if (p.evento === 'cofre') {
-                    badgeEvento = `<span class="absolute top-2 right-2 bg-amber-400 text-amber-950 text-sm font-black px-3 py-1 rounded-xl border-2 border-amber-950 animate-bounce z-20">🎁 ¡COFRE!</span>`;
-                } else if (p.evento === 'mariposa') {
-                    badgeEvento = `<span class="absolute top-2 right-2 bg-yellow-300 text-yellow-950 text-sm font-black px-3 py-1 rounded-xl border-2 border-yellow-600 mariposa-dorada z-20">🦋 ¡MARIPOSA!</span>`;
-                }
-
-                if (!p.tipo && p.evento !== 'cofre') {
-                    grid.innerHTML += `
-                        <div id="parcela-${index}" onclick="interactuarParcela(${index})" 
-                             class="parcela-tierra rounded-3xl h-64 border-4 border-amber-950 flex flex-col items-center justify-center cursor-pointer p-4 text-center relative shadow-xl hover:brightness-110 transition">
-                            <span class="text-5xl opacity-50 mb-2">🕳️</span>
-                            <span class="text-xl font-black text-amber-100 bg-black/60 px-4 py-2 rounded-xl">Tierra Vacía (Toca para Plantar)</span>
-                        </div>
-                    `;
-                } else {
-                    const info = p.tipo ? catalogoPlantas.find(c => c.tipo === p.tipo) : { nombre: "Cofre Mágico", icono: "📦", brote: "🎁" };
-                    const madura = p.progreso >= 100;
-                    const visualPlanta = p.evento === 'cofre' ? "🎁" : (madura ? info.icono : (p.progreso >= 50 ? "🌿" : "🌱"));
-                    const tamanoVisual = p.evento === 'cofre' ? "text-7xl animate-bounce" : (madura ? "text-8xl drop-shadow-xl" : "text-6xl");
-
-                    let estadoTexto = p.evento === 'cofre' 
-                        ? `<span class="bg-amber-400 text-amber-950 text-base font-black px-3 py-1 rounded-xl border-2 border-amber-950 animate-bounce">🎁 ¡ABRIR!</span>`
-                        : (madura 
-                            ? `<span class="bg-amber-400 text-amber-950 text-base font-black px-3 py-1 rounded-xl border-2 border-amber-950 animate-bounce">🧺 ¡RECOGER!</span>`
-                            : `<span class="bg-emerald-700 text-white text-sm font-black px-3 py-1 rounded-xl animate-pulse">💧 ¡REGAR!</span>`);
-
-                    grid.innerHTML += `
-                        <div id="parcela-${index}" onclick="interactuarParcela(${index})" 
-                             class="parcela-tierra parcela-humeda rounded-3xl h-64 border-4 ${madura ? 'border-amber-300' : 'border-amber-950'} flex flex-col items-center justify-between p-4 cursor-pointer relative shadow-xl hover:brightness-110 transition">
-                            
-                            ${badgeEvento}
-
-                            <div class="w-full flex justify-between items-center">
-                                <span class="text-lg font-black text-white bg-black/60 px-3 py-0.5 rounded-xl">${p.evento === 'cofre' ? 'Sorpresa' : info.nombre}</span>
-                                ${estadoTexto}
-                            </div>
-
-                            <div class="flex-1 flex items-center justify-center my-1">
-                                <span class="${tamanoVisual} ${madura && p.evento !== 'cofre' ? 'planta-viva' : ''} select-none">
-                                    ${visualPlanta}
-                                </span>
-                            </div>
-
-                            ${p.evento === 'cofre' ? '<div class="w-full text-center text-amber-200 font-black text-base pb-2">¡Toca para recibir tu regalo!</div>' : `
-                            <div class="w-full bg-black/75 rounded-2xl p-2.5 space-y-2">
-                                <div class="flex justify-between text-base font-black text-white px-1">
-                                    <span>🌱 Crecimiento:</span>
-                                    <span class="text-emerald-300">${Math.round(p.progreso)}%</span>
-                                </div>
-                                <div class="w-full bg-stone-700 h-3 rounded-full overflow-hidden">
-                                    <div class="bg-emerald-400 h-3 transition-all duration-300" style="width: ${p.progreso}%"></div>
-                                </div>
-                            </div>`}
-                        </div>
-                    `;
-                }
-            });
-        }
-
-        function renderizarTodo() {
-            renderizarPedidos();
-            renderizarSemillas();
-            renderizarHuerto();
-        }
-
-        // Evento 1: Mariposas y cofres sorpresa cada 12 segundos
-        setInterval(() => {
-            const parcelasDisponibles = gameState.parcelas.filter(p => !p.evento);
-            if (parcelasDisponibles.length > 0 && Math.random() > 0.3) {
-                const aleatoria = parcelasDisponibles[Math.floor(Math.random() * parcelasDisponibles.length)];
-                aleatoria.evento = Math.random() > 0.5 ? 'mariposa' : 'cofre';
-                guardarJuego();
-                renderizarHuerto();
-                avisar("✨ ¡Sorpresa en el huerto! Apareció algo brillante en la tierra.", "exito");
+        function renderAll() {
+            renderHUD();
+            renderGrid();
+            renderDock();
+            if (!document.getElementById('orders-modal').classList.contains('hidden')) {
+                renderOrders();
             }
-        }, 12000);
+        }
 
-        // Evento 2: Lluvia Mágica Automática cada 25 segundos
+        // Bucle principal del juego (crecimiento fluido y eventos espontáneos)
         setInterval(() => {
-            const nube = document.getElementById('nube-container');
-            nube.classList.remove('hidden');
-            nube.classList.remove('nube-magica');
-            void nube.offsetWidth; // Reiniciar animación
-            nube.classList.add('nube-magica');
-            
-            gameState.parcelas.forEach(p => {
-                if(p.tipo && p.progreso < 100) {
-                    p.progreso = Math.min(100, p.progreso + 40);
+            let changed = false;
+            state.plots.forEach(p => {
+                if (p.crop && p.progress < 100) {
+                    const info = CROPS.find(c => c.id === p.crop);
+                    const step = (100 / info.time) * (p.water > 20 ? 1.3 : 0.6);
+                    p.progress = Math.min(100, p.progress + step);
+                    p.water = Math.max(0, p.water - 2);
+                    changed = true;
                 }
             });
 
-            guardarJuego();
-            renderizarHuerto();
-            avisar("🌧️ ¡Pasa una nube mágica y riega todas tus plantas!", "exito");
+            // Eventos aleatorios en parcelas libres o con flores
+            if (Math.random() < 0.15) {
+                const candidates = state.plots.filter(p => !p.event);
+                if (candidates.length > 0) {
+                    const target = candidates[Math.floor(Math.random() * candidates.length)];
+                    target.event = target.crop ? 'butterfly' : 'chest';
+                    changed = true;
+                }
+            }
 
-            setTimeout(() => {
-                nube.classList.add('hidden');
-            }, 11000);
-        }, 25000);
+            if (changed) {
+                save();
+                renderGrid();
+            }
+        }, 1000);
 
-        cargarJuego();
-        renderizarTodo();
+        load();
+        renderAll();
     </script>
 </body>
 </html>

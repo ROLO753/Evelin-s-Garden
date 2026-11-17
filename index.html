@@ -3,46 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌻 Evelin's Garden - Huerto Vivo y Mágico</title>
+    <title>🌻 Evelin's Garden - El Jardín Vivo de la Abuela</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         @keyframes latido {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.06); }
+            0%, 100% { transform: scale(1) rotate(-1deg); }
+            50% { transform: scale(1.07) rotate(1deg); }
         }
         .planta-viva {
-            animation: latido 2s ease-in-out infinite;
+            animation: latido 2.2s ease-in-out infinite;
             transform-origin: bottom center;
         }
 
         @keyframes flotarMariposa {
             0% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(100px, -30px) rotate(10deg); }
-            66% { transform: translate(-80px, -15px) rotate(-10deg); }
+            33% { transform: translate(60px, -25px) rotate(12deg); }
+            66% { transform: translate(-50px, -10px) rotate(-12deg); }
             100% { transform: translate(0, 0) rotate(0deg); }
         }
         .mariposa-dorada {
-            animation: flotarMariposa 6s ease-in-out infinite;
+            animation: flotarMariposa 5s ease-in-out infinite;
             cursor: pointer;
-            filter: drop-shadow(0 0 8px gold);
+            filter: drop-shadow(0 0 10px gold);
         }
 
         @keyframes saltarPremio {
-            0% { transform: translateY(0) scale(0.5); opacity: 1; }
-            100% { transform: translateY(-90px) scale(1.6); opacity: 0; }
+            0% { transform: translate(-50%, 0) scale(0.6); opacity: 1; }
+            100% { transform: translate(-50%, -100px) scale(1.6); opacity: 0; }
         }
         .premio-flotante {
-            animation: saltarPremio 1.2s ease-out forwards;
+            animation: saltarPremio 1.3s ease-out forwards;
             pointer-events: none;
         }
 
         @keyframes nubePasa {
-            0% { transform: translateX(-150px); }
+            0% { transform: translateX(-180px); }
             100% { transform: translateX(110vw); }
         }
         .nube-magica {
-            animation: nubePasa 12s linear infinite;
+            animation: nubePasa 11s linear forwards;
             pointer-events: none;
+        }
+
+        @keyframes caerConfeti {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .confeti {
+            position: fixed;
+            top: -30px;
+            z-index: 50;
+            font-size: 2rem;
+            pointer-events: none;
+            animation: caerConfeti 2.5s ease-in forwards;
+        }
+
+        @keyframes caminarGato {
+            0%, 100% { transform: translateX(0) scaleX(1); }
+            48% { transform: translateX(140px) scaleX(1); }
+            50% { transform: translateX(140px) scaleX(-1); }
+            98% { transform: translateX(0) scaleX(-1); }
+        }
+        .gato-paseando {
+            animation: caminarGato 16s ease-in-out infinite;
+            cursor: pointer;
         }
 
         .parcela-tierra {
@@ -66,24 +90,24 @@
     <!-- CABECERA -->
     <div class="relative bg-gradient-to-b from-sky-400 via-sky-300 to-emerald-200 pt-5 pb-8 px-4 border-b-8 border-amber-900 overflow-hidden">
         
-        <!-- Nube Mágica que pasa regando -->
-        <div id="nube-container" class="absolute top-2 left-0 text-5xl nube-magica z-20 hidden">
-            ☁️💧
+        <!-- Nube Mágica -->
+        <div id="nube-container" class="absolute top-3 left-0 text-6xl z-20 hidden">
+            ☁️🌧️✨
         </div>
 
-        <header class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 bg-amber-50 border-4 border-amber-800 rounded-3xl px-6 py-4 shadow-xl mb-6 relative z-30">
+        <header class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 bg-amber-50 border-4 border-amber-800 rounded-3xl px-6 py-4 shadow-xl mb-5 relative z-30">
             <div class="flex items-center gap-4 text-center md:text-left">
                 <span class="text-5xl animate-bounce">🌻</span>
                 <div>
                     <h1 class="text-3xl sm:text-4xl font-black text-amber-950 tracking-tight">
-                        EVELIN'S GARDEN: HUERTO MÁGICO
+                        EVELIN'S GARDEN
                     </h1>
-                    <p class="text-base sm:text-lg font-bold text-emerald-800">¡Siembra plantas legendarias, atrapa mariposas y abre cofres!</p>
+                    <p class="text-base sm:text-lg font-bold text-emerald-800">Elige una semilla abajo y toca la tierra para plantar</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <div class="bg-amber-200 border-3 border-amber-600 px-5 py-2.5 rounded-2xl flex items-center gap-3 shadow-inner">
+                <div class="bg-amber-200 border-4 border-amber-600 px-6 py-2.5 rounded-2xl flex items-center gap-3 shadow-inner">
                     <span class="text-4xl">🪙</span>
                     <div>
                         <p class="text-xs font-black uppercase text-amber-900">MONEDAS</p>
@@ -93,43 +117,50 @@
             </div>
         </header>
 
-        <!-- CARTEL DE AVISOS -->
+        <!-- CARTEL GIGANTE DE AVISOS VISUALES -->
         <div id="visual-banner" class="max-w-6xl mx-auto mb-5 bg-amber-100 border-4 border-amber-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all relative z-30">
             <p id="visual-banner-text" class="text-xl sm:text-2xl font-black text-amber-950">
-                ✨ ¡Atrapa las mariposas doradas y abre los cofres sorpresa que aparecen en el huerto!
+                ✨ ¡Bienvenida! Toca una semilla abajo para elegir qué plantar.
             </p>
         </div>
 
         <!-- TABLÓN DE PEDIDOS -->
         <section class="max-w-6xl mx-auto bg-amber-900 border-4 border-amber-950 rounded-3xl p-5 shadow-2xl relative z-30">
             <h2 class="text-amber-100 font-black text-xl uppercase mb-4 flex items-center gap-2">
-                📜 Pedidos Urgentes de la Aldea
+                📜 Pedidos de los Vecinos (Pagan el doble)
             </h2>
-            <div id="orders-container" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+            <div id="orders-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </section>
     </div>
 
     <!-- HUERTO PRINCIPAL -->
-    <main class="flex-1 py-8 px-4 relative" style="background: linear-gradient(180deg, #4ade80 0%, #22c55e 40%, #15803d 100%);">
+    <main class="flex-1 py-6 px-4 relative" style="background: linear-gradient(180deg, #4ade80 0%, #22c55e 40%, #15803d 100%);">
         
+        <!-- Barra de estado y mascota interactiva -->
         <div class="max-w-6xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 bg-amber-950 border-4 border-amber-600 px-6 py-4 rounded-2xl shadow-xl text-white">
-            <div class="text-lg sm:text-2xl font-black flex items-center gap-3 flex-wrap justify-center">
-                <span>ESTADO:</span>
-                <span class="bg-amber-400 text-amber-950 px-4 py-1 rounded-xl text-xl sm:text-2xl font-black">🌟 LLUVIA MÁGICA Y EVENTOS ACTIVOS</span>
+            <div class="flex items-center gap-4">
+                <div onclick="acariciarGato()" title="Toca a Michi" class="text-4xl gato-paseando bg-emerald-800/80 px-3 py-1 rounded-2xl border-2 border-emerald-400">
+                    🐈
+                </div>
+                <div class="text-lg sm:text-xl font-black">
+                    <span>SEMILLA ELEGIDA: </span>
+                    <span id="selected-seed-label" class="bg-amber-400 text-amber-950 px-3 py-1 rounded-xl">🌼 Margarita</span>
+                </div>
             </div>
+            
             <button onclick="comprarParcela()" class="bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-black text-base sm:text-lg px-5 py-3 rounded-2xl border-3 border-emerald-800 shadow-lg cursor-pointer">
-                ➕ AMPLIAR TERRENO (🪙 80)
+                ➕ MÁS TIERRA (🪙 80)
             </button>
         </div>
 
         <!-- Cuadrícula del Huerto -->
-        <div id="farm-grid" class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-24"></div>
+        <div id="farm-grid" class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-36"></div>
     </main>
 
-    <!-- BARRA INFERIOR DE SEMILLAS Y PLANTAS LEGENDARIAS -->
+    <!-- BARRA INFERIOR DE SEMILLAS SELECCIONABLES -->
     <footer class="fixed bottom-0 left-0 right-0 z-30 bg-amber-950 border-t-4 border-amber-500 px-3 py-3 shadow-2xl">
-        <div class="max-w-6xl mx-auto flex flex-col gap-3">
-            <div id="seeds-toolbar" class="flex items-center gap-2 sm:gap-3 overflow-x-auto justify-start sm:justify-center pb-1"></div>
+        <div class="max-w-6xl mx-auto">
+            <div id="seeds-toolbar" class="flex items-center gap-3 overflow-x-auto justify-start md:justify-center pb-1"></div>
         </div>
     </footer>
 
@@ -137,11 +168,12 @@
         const catalogoPlantas = [
             { tipo: "Margarita", nombre: "Margarita", icono: "🌼", costo: 15, venta: 50, desc: "Alegre y rápida." },
             { tipo: "Manzanilla", nombre: "Manzanilla", icono: "🌼", costo: 25, venta: 80, desc: "Té relajante." },
-            { tipo: "Lavanda", nombre: "Lavanda", icono: "🪻", costo: 60, venta: 180, desc: "Aromática y elegante." },
-            // Plantas Legendarias con premios monstruosos
-            { tipo: "GirasolGigante", nombre: "Girasol Gigante", icono: "🌻", costo: 100, venta: 350, desc: "¡Flor solar legendaria!" },
-            { tipo: "RosaCristal", nombre: "Rosa de Cristal", icono: "🌹", costo: 180, venta: 600, desc: "¡Rísima flor mística!" }
+            { tipo: "Lavanda", nombre: "Lavanda", icono: "🪻", costo: 60, venta: 180, desc: "Aromática y fina." },
+            { tipo: "GirasolGigante", nombre: "Girasol Gigante", icono: "🌻", costo: 100, venta: 350, desc: "¡Flor solar gigante!" },
+            { tipo: "RosaCristal", nombre: "Rosa de Cristal", icono: "🌹", costo: 180, venta: 600, desc: "¡Flor legendaria!" }
         ];
+
+        let semillaSeleccionada = "Margarita";
 
         let gameState = {
             money: 300,
@@ -157,78 +189,130 @@
             ]
         };
 
+        function cargarJuego() {
+            const saved = localStorage.getItem('evelins_garden_magic_v1');
+            if (saved) {
+                gameState = JSON.parse(saved);
+            }
+        }
+
+        function guardarJuego() {
+            localStorage.setItem('evelins_garden_magic_v1', JSON.stringify(gameState));
+        }
+
         function avisar(msg, tipo = "info") {
             const banner = document.getElementById('visual-banner');
             const texto = document.getElementById('visual-banner-text');
             texto.innerText = msg;
-            if(tipo === "exito") banner.className = "max-w-6xl mx-auto mb-5 bg-emerald-100 border-4 border-emerald-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all";
-            else if(tipo === "alerta") banner.className = "max-w-6xl mx-auto mb-5 bg-rose-100 border-4 border-rose-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all";
-            else banner.className = "max-w-6xl mx-auto mb-5 bg-amber-100 border-4 border-amber-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all";
+            if(tipo === "exito") banner.className = "max-w-6xl mx-auto mb-5 bg-emerald-100 border-4 border-emerald-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all relative z-30";
+            else if(tipo === "alerta") banner.className = "max-w-6xl mx-auto mb-5 bg-rose-100 border-4 border-rose-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all relative z-30";
+            else banner.className = "max-w-6xl mx-auto mb-5 bg-amber-100 border-4 border-amber-600 rounded-2xl px-6 py-4 text-center shadow-lg transition-all relative z-30";
+        }
+
+        function lanzarConfeti() {
+            const iconos = ["🎉", "✨", "🪙", "🌸", "⭐"];
+            for (let i = 0; i < 18; i++) {
+                const el = document.createElement('div');
+                el.className = 'confeti';
+                el.innerText = iconos[Math.floor(Math.random() * iconos.length)];
+                el.style.left = `${Math.random() * 95}vw`;
+                el.style.animationDelay = `${Math.random() * 0.6}s`;
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 3000);
+            }
         }
 
         function lanzarPremioVisual(index, texto) {
             const parcela = document.getElementById(`parcela-${index}`);
             if(!parcela) return;
             const premio = document.createElement('div');
-            premio.className = "absolute text-3xl font-black text-amber-300 premio-flotante z-30 top-1/2 left-1/2";
+            premio.className = "absolute text-3xl font-black text-amber-300 premio-flotante z-30 top-1/2 left-1/2 whitespace-nowrap drop-shadow";
             premio.innerText = texto;
             parcela.appendChild(premio);
-            setTimeout(() => premio.remove(), 1200);
+            setTimeout(() => premio.remove(), 1300);
+        }
+
+        function seleccionarSemilla(tipo) {
+            semillaSeleccionada = tipo;
+            const info = catalogoPlantas.find(c => c.tipo === tipo);
+            document.getElementById('selected-seed-label').innerText = `${info.icono} ${info.nombre}`;
+            avisar(`Elegiste: ${info.nombre} (${info.desc}). Toca una tierra vacía para sembrarla.`, "info");
+            renderizarSemillas();
+        }
+
+        function acariciarGato() {
+            gameState.money += 10;
+            guardarJuego();
+            renderizarHuerto();
+            avisar("🐈 ¡Michi ronronea feliz! Te encontró 🪙 10 monedas en el césped.", "exito");
         }
 
         function interactuarParcela(index) {
             const p = gameState.parcelas[index];
 
+            // 1. Cofre sorpresa
             if (p.evento === 'cofre') {
                 p.evento = null;
                 const premioMonedas = 80;
                 gameState.money += premioMonedas;
                 lanzarPremioVisual(index, `🎁 +🪙 ${premioMonedas}`);
+                lanzarConfeti();
+                guardarJuego();
                 renderizarTodo();
-                avisar("🎁 ¡Abriste un cofre sorpresa con monedas extra!", "exito");
+                avisar("🎁 ¡Abriste un cofre sorpresa con 🪙 80 monedas!", "exito");
                 return;
             }
 
+            // 2. Mariposa dorada
             if (p.evento === 'mariposa') {
                 p.evento = null;
                 const premioMonedas = 60;
                 gameState.money += premioMonedas;
                 lanzarPremioVisual(index, `🦋 +🪙 ${premioMonedas}`);
+                guardarJuego();
                 renderizarTodo();
-                avisar("🦋 ¡Atrapaste la mariposa dorada!", "exito");
+                avisar("🦋 ¡Atrapaste la mariposa dorada y ganaste 🪙 60 monedas!", "exito");
                 return;
             }
 
+            // 3. Tierra vacía: plantar la semilla elegida
             if (p.tipo === null) {
-                // Sembrar automáticamente una margarita para empezar fácil
-                const info = catalogoPlantas[0];
+                const info = catalogoPlantas.find(c => c.tipo === semillaSeleccionada);
                 if (gameState.money < info.costo) {
-                    avisar("⚠️ No tienes suficientes monedas.", "alerta");
+                    avisar(`⚠️ Te faltan monedas para plantar ${info.nombre}.`, "alerta");
                     return;
                 }
                 gameState.money -= info.costo;
                 p.tipo = info.tipo;
                 p.progreso = 20;
+                lanzarPremioVisual(index, `🌱 ¡Sembrada!`);
+                guardarJuego();
                 renderizarTodo();
-                avisar(`🌱 ¡Sembraste ${info.nombre}! Toca la planta para regarla.`, "exito");
+                avisar(`🌱 ¡Sembraste ${info.nombre}! Tócala para regarla y hacerla crecer.`, "exito");
                 return;
             }
 
+            // 4. Cosechar si ya llegó al 100%
             if (p.progreso >= 100) {
                 const info = catalogoPlantas.find(c => c.tipo === p.tipo);
                 gameState.inventario[p.tipo] = (gameState.inventario[p.tipo] || 0) + 1;
                 lanzarPremioVisual(index, `🧺 +1 ${info.icono}`);
+                if (info.tipo === "GirasolGigante" || info.tipo === "RosaCristal") {
+                    lanzarConfeti();
+                }
                 gameState.parcelas[index] = { id: p.id, tipo: null, progreso: 0, evento: null };
+                guardarJuego();
                 renderizarTodo();
-                avisar(`🎉 ¡Cosechaste ${info.nombre}! Excelente calidad.`, "exito");
+                avisar(`🎉 ¡Cosechaste ${info.nombre}! Entrégala arriba en los pedidos.`, "exito");
                 return;
             }
 
-            // Riego directo al tocar
+            // 5. Regar directamente al tocar
             p.progreso = Math.min(100, p.progreso + 35);
-            lanzarPremioVisual(index, "💧 ✨");
+            lanzarPremioVisual(index, "💧 ✨ +35%");
+            guardarJuego();
             renderizarTodo();
-            avisar("💧 ¡Regaste la planta! Creció un buen trecho.", "exito");
+            avisar("💧 ¡Regaste la planta! Creció rápidamente.", "exito");
         }
 
         function entregarPedido(idx) {
@@ -236,23 +320,25 @@
             const tienes = gameState.inventario[pedido.tipo] || 0;
 
             if (tienes < pedido.cantidad) {
-                avisar(`⚠️ Faltan unidades. Tienes ${tienes} y piden ${pedido.cantidad}.`, "alerta");
+                avisar(`⚠️ Te faltan flores. Tienes ${tienes} de ${pedido.cantidad}.`, "alerta");
                 return;
             }
 
             gameState.inventario[pedido.tipo] -= pedido.cantidad;
             gameState.money += pedido.recompensa;
+            lanzarConfeti();
 
             const randomPlanta = catalogoPlantas[Math.floor(Math.random() * catalogoPlantas.length)];
-            const vecinos = ["👴 Don Mateo", "👩 Doña Rosa", "👧 Sofía", "🧑‍🦰 Lucas"];
+            const vecinos = ["👴 Don Mateo", "👩 Doña Rosa", "👧 Sofía", "🧑‍🦰 Lucas", "👵 Doña Clara"];
             gameState.pedidos[idx] = {
                 id: Date.now(),
                 cliente: vecinos[Math.floor(Math.random() * vecinos.length)],
                 tipo: randomPlanta.tipo,
-                cantidad: 1,
+                cantidad: randomPlanta.costo >= 100 ? 1 : 2,
                 recompensa: randomPlanta.venta * 2
             };
 
+            guardarJuego();
             renderizarTodo();
             avisar(`🎉 ¡Pedido entregado! Ganaste 🪙 ${pedido.recompensa} monedas.`, "exito");
         }
@@ -260,13 +346,14 @@
         function comprarParcela() {
             const costo = 80;
             if (gameState.money < costo) {
-                avisar("⚠️ Te faltan monedas para ampliar el terreno.", "alerta");
+                avisar("⚠️ Necesitas 🪙 80 monedas para comprar más tierra.", "alerta");
                 return;
             }
             gameState.money -= costo;
             gameState.parcelas.push({ id: gameState.parcelas.length + 1, tipo: null, progreso: 0, evento: 'cofre' });
+            guardarJuego();
             renderizarTodo();
-            avisar("✨ ¡Terreno ampliado con un cofre sorpresa de regalo!", "exito");
+            avisar("✨ ¡Compraste más tierra y apareció un cofre sorpresa!", "exito");
         }
 
         function renderizarPedidos() {
@@ -282,10 +369,10 @@
                         <div>
                             <p class="text-base font-black text-amber-900">${ped.cliente}</p>
                             <p class="text-xl font-black text-stone-900 mt-1">Pide: ${ped.cantidad} ${info.icono} ${info.nombre}</p>
-                            <p class="text-base font-extrabold text-emerald-800 mt-1">En inventario: ${tienes}</p>
+                            <p class="text-base font-extrabold text-emerald-800 mt-1">Tienes guardadas: ${tienes} de ${ped.cantidad}</p>
                         </div>
-                        <button onclick="entregarPedido(${idx})" class="w-full ${listo ? 'bg-emerald-500 hover:bg-emerald-400 text-emerald-950 cursor-pointer animate-pulse' : 'bg-stone-300 text-stone-600'} font-black text-lg py-2.5 rounded-xl border-2 border-stone-800 transition">
-                            ${listo ? `✅ ENTREGAR YA (+🪙 ${ped.recompensa})` : `Faltan flores`}
+                        <button onclick="entregarPedido(${idx})" class="w-full ${listo ? 'bg-emerald-500 hover:bg-emerald-400 text-emerald-950 cursor-pointer animate-pulse' : 'bg-stone-300 text-stone-600'} font-black text-lg py-3 rounded-xl border-2 border-stone-800 transition">
+                            ${listo ? `✅ ENTREGAR (+🪙 ${ped.recompensa})` : `Faltan flores (🪙 ${ped.recompensa})`}
                         </button>
                     </div>
                 `;
@@ -297,15 +384,18 @@
             container.innerHTML = '';
             catalogoPlantas.forEach(planta => {
                 const tienes = gameState.inventario[planta.tipo] || 0;
+                const seleccionada = semillaSeleccionada === planta.tipo;
+
                 container.innerHTML += `
-                    <div class="bg-emerald-800 border-2 border-emerald-400 text-white px-4 py-2.5 rounded-2xl flex items-center gap-3 shrink-0 shadow">
+                    <button onclick="seleccionarSemilla('${planta.tipo}')" 
+                            class="${seleccionada ? 'bg-amber-500 text-amber-950 ring-4 ring-white scale-105' : 'bg-emerald-800 text-white border-2 border-emerald-400'} px-4 py-2.5 rounded-2xl flex items-center gap-3 shrink-0 shadow cursor-pointer transition">
                         <span class="text-3xl">${planta.icono}</span>
                         <div class="text-left">
                             <p class="text-base font-black leading-tight">${planta.nombre} (🪙 ${planta.costo})</p>
-                            <p class="text-xs text-amber-200">${planta.desc}</p>
-                            <p class="text-sm font-black text-amber-300">Almacenadas: ${tienes}</p>
+                            <p class="text-xs font-bold ${seleccionada ? 'text-amber-950' : 'text-amber-200'}">${planta.desc}</p>
+                            <p class="text-sm font-black ${seleccionada ? 'text-emerald-950' : 'text-amber-300'}">Cosechadas: ${tienes}</p>
                         </div>
-                    </div>
+                    </button>
                 `;
             });
         }
@@ -318,9 +408,9 @@
             gameState.parcelas.forEach((p, index) => {
                 let badgeEvento = "";
                 if (p.evento === 'cofre') {
-                    badgeEvento = `<span class="absolute top-2 right-2 bg-amber-400 text-amber-950 text-sm font-black px-3 py-1 rounded-xl border-2 border-amber-950 animate-bounce z-20">🎁 ¡COFRE SORPRESA!</span>`;
+                    badgeEvento = `<span class="absolute top-2 right-2 bg-amber-400 text-amber-950 text-sm font-black px-3 py-1 rounded-xl border-2 border-amber-950 animate-bounce z-20">🎁 ¡COFRE!</span>`;
                 } else if (p.evento === 'mariposa') {
-                    badgeEvento = `<span class="absolute top-2 right-2 bg-yellow-300 text-yellow-950 text-sm font-black px-3 py-1 rounded-xl border-2 border-yellow-600 mariposa-dorada z-20">🦋 ¡MARIPOSA DORADA!</span>`;
+                    badgeEvento = `<span class="absolute top-2 right-2 bg-yellow-300 text-yellow-950 text-sm font-black px-3 py-1 rounded-xl border-2 border-yellow-600 mariposa-dorada z-20">🦋 ¡MARIPOSA!</span>`;
                 }
 
                 if (!p.tipo && p.evento !== 'cofre') {
@@ -328,20 +418,20 @@
                         <div id="parcela-${index}" onclick="interactuarParcela(${index})" 
                              class="parcela-tierra rounded-3xl h-64 border-4 border-amber-950 flex flex-col items-center justify-center cursor-pointer p-4 text-center relative shadow-xl hover:brightness-110 transition">
                             <span class="text-5xl opacity-50 mb-2">🕳️</span>
-                            <span class="text-xl font-black text-amber-100 bg-black/50 px-4 py-1.5 rounded-xl">Tierra Fértil (Toca para Sembrar)</span>
+                            <span class="text-xl font-black text-amber-100 bg-black/60 px-4 py-2 rounded-xl">Tierra Vacía (Toca para Plantar)</span>
                         </div>
                     `;
                 } else {
                     const info = p.tipo ? catalogoPlantas.find(c => c.tipo === p.tipo) : { nombre: "Cofre Mágico", icono: "📦", brote: "🎁" };
                     const madura = p.progreso >= 100;
-                    const visualPlanta = p.evento === 'cofre' ? "🎁" : (madura ? info.icono : info.brote);
+                    const visualPlanta = p.evento === 'cofre' ? "🎁" : (madura ? info.icono : (p.progreso >= 50 ? "🌿" : "🌱"));
                     const tamanoVisual = p.evento === 'cofre' ? "text-7xl animate-bounce" : (madura ? "text-8xl drop-shadow-xl" : "text-6xl");
 
                     let estadoTexto = p.evento === 'cofre' 
-                        ? `<span class="bg-amber-400 text-amber-950 text-base font-black px-3 py-1 rounded-xl border-2 border-amber-950 animate-bounce">🎁 ¡TOCA PARA ABRIR!</span>`
+                        ? `<span class="bg-amber-400 text-amber-950 text-base font-black px-3 py-1 rounded-xl border-2 border-amber-950 animate-bounce">🎁 ¡ABRIR!</span>`
                         : (madura 
-                            ? `<span class="bg-amber-400 text-amber-950 text-base font-black px-3 py-1 rounded-xl border-2 border-amber-950 animate-bounce">🧺 ¡TOCA PARA COSECHAR!</span>`
-                            : `<span class="bg-emerald-700 text-white text-sm font-black px-3 py-1 rounded-xl animate-pulse">💧 ¡Toca para regar y crecer!</span>`);
+                            ? `<span class="bg-amber-400 text-amber-950 text-base font-black px-3 py-1 rounded-xl border-2 border-amber-950 animate-bounce">🧺 ¡RECOGER!</span>`
+                            : `<span class="bg-emerald-700 text-white text-sm font-black px-3 py-1 rounded-xl animate-pulse">💧 ¡REGAR!</span>`);
 
                     grid.innerHTML += `
                         <div id="parcela-${index}" onclick="interactuarParcela(${index})" 
@@ -350,7 +440,7 @@
                             ${badgeEvento}
 
                             <div class="w-full flex justify-between items-center">
-                                <span class="text-lg font-black text-white bg-black/60 px-3 py-0.5 rounded-xl">${p.evento === 'cofre' ? 'Cofre Sorpresa' : info.nombre}</span>
+                                <span class="text-lg font-black text-white bg-black/60 px-3 py-0.5 rounded-xl">${p.evento === 'cofre' ? 'Sorpresa' : info.nombre}</span>
                                 ${estadoTexto}
                             </div>
 
@@ -360,7 +450,7 @@
                                 </span>
                             </div>
 
-                            ${p.evento === 'cofre' ? '<div class="w-full text-center text-amber-200 font-black text-sm pb-2">¡Premio oculto en el terreno!</div>' : `
+                            ${p.evento === 'cofre' ? '<div class="w-full text-center text-amber-200 font-black text-base pb-2">¡Toca para recibir tu regalo!</div>' : `
                             <div class="w-full bg-black/75 rounded-2xl p-2.5 space-y-2">
                                 <div class="flex justify-between text-base font-black text-white px-1">
                                     <span>🌱 Crecimiento:</span>
@@ -382,37 +472,42 @@
             renderizarHuerto();
         }
 
-        // Evento 1: Aparición de mariposas y cofres sorpresa cada 12 segundos
+        // Evento 1: Mariposas y cofres sorpresa cada 12 segundos
         setInterval(() => {
             const parcelasDisponibles = gameState.parcelas.filter(p => !p.evento);
             if (parcelasDisponibles.length > 0 && Math.random() > 0.3) {
                 const aleatoria = parcelasDisponibles[Math.floor(Math.random() * parcelasDisponibles.length)];
                 aleatoria.evento = Math.random() > 0.5 ? 'mariposa' : 'cofre';
+                guardarJuego();
                 renderizarHuerto();
-                avisar("✨ ¡Sorpresa en el huerto! Revisa las parcelas, apareció algo brillante.", "exito");
+                avisar("✨ ¡Sorpresa en el huerto! Apareció algo brillante en la tierra.", "exito");
             }
         }, 12000);
 
-        // Evento 2: Lluvia Mágica Automática cada 25 segundos que riega todo el huerto de golpe
+        // Evento 2: Lluvia Mágica Automática cada 25 segundos
         setInterval(() => {
             const nube = document.getElementById('nube-container');
             nube.classList.remove('hidden');
+            nube.classList.remove('nube-magica');
+            void nube.offsetWidth; // Reiniciar animación
+            nube.classList.add('nube-magica');
             
-            // Riega todas las plantas que no estén listas
             gameState.parcelas.forEach(p => {
                 if(p.tipo && p.progreso < 100) {
                     p.progreso = Math.min(100, p.progreso + 40);
                 }
             });
 
+            guardarJuego();
             renderizarHuerto();
-            avisar("🌧️ ¡Pasa una nube mágica y riega automáticamente todo el huerto!", "exito");
+            avisar("🌧️ ¡Pasa una nube mágica y riega todas tus plantas!", "exito");
 
             setTimeout(() => {
                 nube.classList.add('hidden');
-            }, 12000);
+            }, 11000);
         }, 25000);
 
+        cargarJuego();
         renderizarTodo();
     </script>
 </body>

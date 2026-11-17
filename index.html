@@ -50,20 +50,19 @@
     <!-- ESCENARIO SUPERIOR -->
     <div class="relative bg-gradient-to-b from-sky-400 via-sky-300 to-emerald-200 pt-5 pb-8 px-4 border-b-8 border-amber-900">
         
-        <!-- Barra Superior HUD Grande -->
-        <header class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 bg-amber-50 border-4 border-amber-800 rounded-3xl px-6 py-4 shadow-xl mb-6">
+        <!-- Barra Superior HUD -->
+        <header class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 bg-amber-50 border-4 border-amber-800 rounded-3xl px-6 py-4 shadow-xl mb-6">
             <div class="flex items-center gap-4 text-center md:text-left">
                 <span class="text-5xl">🌻</span>
                 <div>
                     <h1 class="text-3xl sm:text-4xl font-black text-amber-950 tracking-tight">
                         EVELIN'S GARDEN
                     </h1>
-                    <p class="text-base sm:text-lg font-bold text-emerald-800">Toca abajo lo que quieras usar y luego toca la tierra</p>
+                    <p class="text-base sm:text-lg font-bold text-emerald-800">Toca una herramienta abajo y luego toca la tierra</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <!-- Clima Grande -->
                 <div class="bg-sky-100 border-3 border-sky-600 px-5 py-2.5 rounded-2xl flex items-center gap-3">
                     <span id="weather-icon" class="text-4xl">☀️</span>
                     <div>
@@ -72,7 +71,6 @@
                     </div>
                 </div>
 
-                <!-- Monedas Grandes -->
                 <div class="bg-amber-200 border-3 border-amber-600 px-5 py-2.5 rounded-2xl flex items-center gap-3">
                     <span class="text-4xl">🪙</span>
                     <div>
@@ -83,29 +81,25 @@
             </div>
         </header>
 
-        <!-- AVISO VISUAL GRANDE EN PANTALLA (Reemplaza sonidos y alertas pequeñas) -->
-        <div id="visual-banner" class="max-w-5xl mx-auto mb-5 bg-white border-4 border-emerald-700 rounded-2xl px-6 py-3 text-center shadow-lg transition-all">
+        <!-- AVISO VISUAL GRANDE -->
+        <div id="visual-banner" class="max-w-6xl mx-auto mb-5 bg-white border-4 border-emerald-700 rounded-2xl px-6 py-3 text-center shadow-lg transition-all">
             <p id="visual-banner-text" class="text-xl sm:text-2xl font-black text-emerald-950">
-                👋 ¡Bienvenida! Elige una herramienta abajo para cuidar tus flores.
+                👋 ¡Hola Abuela! Elige una semilla o herramienta para comenzar.
             </p>
         </div>
 
-        <!-- TABLÓN DE PEDIDOS GRANDE -->
-        <section class="max-w-5xl mx-auto bg-amber-900 border-4 border-amber-950 rounded-3xl p-5 shadow-2xl">
+        <!-- TABLÓN DE PEDIDOS -->
+        <section class="max-w-6xl mx-auto bg-amber-900 border-4 border-amber-950 rounded-3xl p-5 shadow-2xl">
             <h2 class="text-amber-100 font-black text-xl uppercase mb-4 flex items-center gap-2">
                 📜 Pedidos de los Vecinos (Pagan el doble)
             </h2>
-            <div id="orders-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Se llena con JS -->
-            </div>
+            <div id="orders-container" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </section>
     </div>
 
     <!-- ESCENARIO CENTRAL: El Huerto -->
     <main class="flex-1 pradera-cesped py-8 px-4 relative">
-        
-        <!-- Indicador Gigante de Herramienta Activa -->
-        <div class="max-w-5xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 bg-amber-950 border-4 border-amber-600 px-6 py-4 rounded-2xl shadow-xl text-white">
+        <div class="max-w-6xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 bg-amber-950 border-4 border-amber-600 px-6 py-4 rounded-2xl shadow-xl text-white">
             <div class="text-lg sm:text-2xl font-black flex items-center gap-3 flex-wrap justify-center">
                 <span>ESTÁS USANDO:</span>
                 <span id="active-tool-label" class="bg-amber-400 text-amber-950 px-4 py-1 rounded-xl text-xl sm:text-2xl">💧 REGADERA</span>
@@ -115,17 +109,14 @@
             </button>
         </div>
 
-        <!-- Cuadrícula de Parcelas Amplias -->
-        <div id="farm-grid" class="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-48">
-            <!-- Parcelas -->
-        </div>
+        <div id="farm-grid" class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-64"></div>
     </main>
 
-    <!-- BARRA INFERIOR EXTRA GRANDE -->
+    <!-- BARRA INFERIOR CON SCROLL PARA MUCHAS PLANTAS Y HERRAMIENTAS -->
     <footer class="fixed bottom-0 left-0 right-0 z-30 bg-amber-950 border-t-4 border-amber-500 px-3 py-3 shadow-2xl">
         <div class="max-w-6xl mx-auto flex flex-col gap-3">
             
-            <!-- Fila 1: Herramientas de Cuidado -->
+            <!-- Herramientas -->
             <div class="flex items-center gap-2 sm:gap-3 overflow-x-auto justify-start sm:justify-center pb-1">
                 <button onclick="seleccionarHerramienta('regar', '💧 REGADERA')" id="btn-regar" class="tool-btn ring-4 ring-amber-300 bg-blue-600 text-white px-4 py-2.5 rounded-2xl flex items-center gap-2 shrink-0 cursor-pointer">
                     <span class="text-3xl">💧</span>
@@ -153,18 +144,27 @@
                 </button>
             </div>
 
-            <!-- Fila 2: Semillas Grandes -->
-            <div id="seeds-toolbar" class="flex items-center gap-2 sm:gap-3 overflow-x-auto justify-start sm:justify-center"></div>
+            <!-- Semillas (Flores y Plantas de Té con scroll horizontal) -->
+            <div id="seeds-toolbar" class="flex items-center gap-2 sm:gap-3 overflow-x-auto justify-start sm:justify-center pb-1"></div>
 
         </div>
     </footer>
 
     <script>
+        // Catálogo ampliado con Flores y Plantas Medicinales / de Té con descripciones cortas
         const catalogoPlantas = [
-            { tipo: "Margarita", nombre: "Margarita", icono: "🌼", brote: "🌱", media: "🌿", costo: 20, venta: 55 },
-            { tipo: "Girasol", nombre: "Girasol", icono: "🌻", brote: "🌱", media: "🌿", costo: 45, venta: 120 },
-            { tipo: "FlorAzul", nombre: "Flor Azul", icono: "💠", brote: "🌱", media: "🌿", costo: 80, venta: 210 },
-            { tipo: "Rosa", nombre: "Rosa", icono: "🌹", brote: "🌱", media: "🌿", costo: 130, venta: 350 }
+            // Flores Ornamentales
+            { tipo: "Margarita", nombre: "Margarita", icono: "🌼", brote: "🌱", media: "🌿", costo: 20, venta: 55, desc: "Flor alegre y fácil de cuidar." },
+            { tipo: "Girasol", nombre: "Girasol", icono: "🌻", brote: "🌱", media: "🌿", costo: 45, venta: 120, desc: "Busca siempre la luz del sol." },
+            { tipo: "Rosa", nombre: "Rosa", icono: "🌹", brote: "🌱", media: "🌿", costo: 130, venta: 350, desc: "Hermosa y de gran valor." },
+            { tipo: "Tulipan", nombre: "Tulipán", icono: "🌷", brote: "🌱", media: "🌿", costo: 90, venta: 240, desc: "Elegante flor de primavera." },
+            
+            // Plantas para Té e Infusiones
+            { tipo: "Manzanilla", nombre: "Manzanilla", icono: "🌼", brote: "🌱", media: "🌿", costo: 25, venta: 70, desc: "Té ideal para calmar los nervios." },
+            { tipo: "Menta", nombre: "Menta", icono: "🌿", brote: "🌱", media: "🌿", costo: 35, venta: 95, desc: "Té fresco para el estómago." },
+            { tipo: "Jengibre", nombre: "Jengibre", icono: "🫚", brote: "🌱", media: "🌿", costo: 60, venta: 160, desc: "Té medicinal para la garganta." },
+            { tipo: "Lavanda", nombre: "Lavanda", icono: "🪻", brote: "🌱", media: "🌿", costo: 75, venta: 200, desc: "Infusión relajante para dormir bien." },
+            { tipo: "Eukalipto", nombre: "Eucalipto", icon: "🍃", icono: "🍃", brote: "🌱", media: "🌿", costo: 100, venta: 270, desc: "Excelente té para respirar mejor." }
         ];
 
         const climas = [
@@ -176,44 +176,40 @@
         let herramientaActual = "regar";
 
         let gameState = {
-            money: 150,
+            money: 180,
             lastUpdate: Date.now(),
             clima: "soleado",
             ultimoClima: Date.now(),
-            inventario: { Margarita: 0, Girasol: 0, FlorAzul: 0, Rosa: 0 },
+            inventario: { Margarita: 0, Girasol: 0, Rosa: 0, Tulipan: 0, Manzanilla: 0, Menta: 0, Jengibre: 0, Lavanda: 0, Eukalipto: 0 },
             pedidos: [
-                { id: 1, cliente: "👴 Don Mateo", tipo: "Margarita", cantidad: 2, recompensa: 150 },
+                { id: 1, cliente: "👴 Don Mateo", tipo: "Manzanilla", cantidad: 2, recompensa: 180 },
                 { id: 2, cliente: "👩‍🌾 Doña Rosa", tipo: "Girasol", cantidad: 1, recompensa: 200 },
-                { id: 3, cliente: "👧 Sofía", tipo: "FlorAzul", cantidad: 1, recompensa: 350 }
+                { id: 3, cliente: "👧 Sofía", tipo: "Menta", cantidad: 2, recompensa: 240 }
             ],
             parcelas: [
-                { id: 1, tipo: "Margarita", salud: 100, agua: 85, abono: 80, progreso: 50 },
+                { id: 1, tipo: "Manzanilla", salud: 100, agua: 90, abono: 90, progreso: 60 },
                 { id: 2, tipo: "Girasol", salud: 100, agua: 80, abono: 80, progreso: 100 },
                 { id: 3, tipo: null, salud: 0, agua: 0, abono: 0, progreso: 0 }
             ]
         };
 
-        // Mensaje visual gigante en el cartel superior (ideal sin audio)
         function avisarEnPantalla(mensaje, tipo = "info") {
             const banner = document.getElementById('visual-banner');
             const texto = document.getElementById('visual-banner-text');
             texto.innerText = mensaje;
 
-            banner.className = "max-w-5xl mx-auto mb-5 border-4 rounded-2xl px-6 py-3 text-center shadow-lg transition-all ";
+            banner.className = "max-w-6xl mx-auto mb-5 border-4 rounded-2xl px-6 py-3 text-center shadow-lg transition-all ";
             if (tipo === "error") {
                 banner.className += "bg-rose-100 border-rose-700 text-rose-950";
-                texto.className = "text-xl sm:text-2xl font-black text-rose-950";
             } else if (tipo === "exito") {
                 banner.className += "bg-amber-100 border-amber-600 text-amber-950";
-                texto.className = "text-xl sm:text-2xl font-black text-amber-950";
             } else {
                 banner.className += "bg-white border-emerald-700 text-emerald-950";
-                texto.className = "text-xl sm:text-2xl font-black text-emerald-950";
             }
         }
 
         function cargarJuego() {
-            const saved = localStorage.getItem('evelins_garden_abuela_v1');
+            const saved = localStorage.getItem('evelins_garden_abuela_v2');
             if (saved) {
                 gameState = JSON.parse(saved);
                 actualizarClima();
@@ -222,7 +218,7 @@
 
         function guardarJuego() {
             gameState.lastUpdate = Date.now();
-            localStorage.setItem('evelins_garden_abuela_v1', JSON.stringify(gameState));
+            localStorage.setItem('evelins_garden_abuela_v2', JSON.stringify(gameState));
         }
 
         function actualizarClima() {
@@ -232,7 +228,7 @@
                 gameState.clima = randomClima.id;
                 gameState.ultimoClima = ahora;
                 guardarJuego();
-                avisarEnPantalla(`${randomClima.icono} ¡Cambió el clima a ${randomClima.nombre}!`, "info");
+                avisarEnPantalla(`${randomClima.icono} ¡El clima cambió a ${randomClima.nombre}!`, "info");
             }
             const climaObj = climas.find(c => c.id === gameState.clima) || climas[0];
             document.getElementById('weather-icon').innerText = climaObj.icono;
@@ -242,7 +238,7 @@
         function seleccionarHerramienta(codigo, etiqueta) {
             herramientaActual = codigo;
             document.getElementById('active-tool-label').innerText = etiqueta;
-            avisarEnPantalla(`Seleccionaste: ${etiqueta}. Ahora toca una parcela de tierra.`, "info");
+            avisarEnPantalla(`Seleccionaste: ${etiqueta}. Ahora toca un cuadro de tierra.`, "info");
 
             document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('ring-4', 'ring-amber-300', 'scale-105'));
             const activo = document.getElementById(`btn-${codigo.replace(':', '-')}`);
@@ -262,7 +258,6 @@
         function interactuarParcela(index) {
             const p = gameState.parcelas[index];
 
-            // Sembrar
             if (herramientaActual.startsWith('semilla:')) {
                 const tipoSemilla = herramientaActual.split(':')[1];
                 const info = catalogoPlantas.find(c => c.tipo === tipoSemilla);
@@ -284,13 +279,13 @@
                 };
                 guardarJuego();
                 renderizarTodo();
-                avisarEnPantalla(`🌱 ¡Sembraste ${info.nombre}! Ahora riégala para que crezca.`, "exito");
+                avisarEnPantalla(`🌱 ¡Sembraste ${info.nombre}! (${info.desc})`, "exito");
                 lanzarEfecto(index, `🌱 ¡Sembrada!`, "bg-emerald-500 text-emerald-950");
                 return;
             }
 
             if (p.tipo === null) {
-                avisarEnPantalla("👇 Esta tierra está vacía. Elige una semilla abajo para sembrar.", "info");
+                avisarEnPantalla("👇 Tierra vacía. Elige una semilla o planta de té abajo.", "info");
                 lanzarEfecto(index, "Tierra vacía", "bg-amber-200 text-amber-950");
                 return;
             }
@@ -299,7 +294,7 @@
                 gameState.parcelas[index] = { id: p.id, tipo: null, salud: 0, agua: 0, abono: 0, progreso: 0 };
                 guardarJuego();
                 renderizarTodo();
-                avisarEnPantalla("🪓 Tierra limpia y lista para sembrar de nuevo.", "info");
+                avisarEnPantalla("🪓 Tierra limpia y lista para sembrar.", "info");
                 lanzarEfecto(index, "🪓 ¡Limpia!", "bg-stone-800 text-white");
                 return;
             }
@@ -315,7 +310,7 @@
                 p.salud = Math.min(100, p.salud + 15);
                 guardarJuego();
                 renderizarTodo();
-                avisarEnPantalla("💧 ¡Muy bien! La planta ya tiene suficiente agua.", "exito");
+                avisarEnPantalla("💧 ¡Muy bien! La planta ya tiene agua.", "exito");
                 lanzarEfecto(index, "💧 ¡Regada!", "bg-blue-600 text-white");
             }
             else if (herramientaActual === 'abonar') {
@@ -323,19 +318,19 @@
                 p.progreso = Math.min(100, p.progreso + 15);
                 guardarJuego();
                 renderizarTodo();
-                avisarEnPantalla("🍂 ¡Excelente! El abono ayuda a que crezca más rápido.", "exito");
+                avisarEnPantalla("🍂 ¡Excelente! El abono acelera el crecimiento.", "exito");
                 lanzarEfecto(index, "🍂 ¡Abonada!", "bg-amber-600 text-white");
             }
             else if (herramientaActual === 'podar') {
                 p.progreso = Math.min(100, p.progreso + 25);
                 guardarJuego();
                 renderizarTodo();
-                avisarEnPantalla("✂️ ¡Podada con éxito! Creció un poco más.", "exito");
+                avisarEnPantalla("✂️ ¡Podada con éxito!", "exito");
                 lanzarEfecto(index, "✂️ ¡Podada!", "bg-purple-600 text-white");
             }
             else if (herramientaActual === 'cosechar') {
                 if (p.progreso < 100) {
-                    avisarEnPantalla("⏳ Todavía no está lista para recoger. Espera a que llegue al 100%.", "info");
+                    avisarEnPantalla("⏳ Todavía no está lista. Espera al 100%.", "info");
                     lanzarEfecto(index, "¡Aún le falta!", "bg-amber-500 text-amber-950");
                     return;
                 }
@@ -344,7 +339,7 @@
                 gameState.parcelas[index] = { id: p.id, tipo: null, salud: 0, agua: 0, abono: 0, progreso: 0 };
                 guardarJuego();
                 renderizarTodo();
-                avisarEnPantalla(`🧺 ¡Recogiste 1 ${info.nombre}! Entrégala arriba en los pedidos.`, "exito");
+                avisarEnPantalla(`🧺 ¡Recogiste ${info.nombre}! Entrégala arriba en los pedidos.`, "exito");
                 lanzarEfecto(index, `+1 ${info.icono} Recogida`, "bg-amber-400 text-amber-950");
             }
         }
@@ -354,7 +349,7 @@
             const tienes = gameState.inventario[pedido.tipo] || 0;
 
             if (tienes < pedido.cantidad) {
-                avisarEnPantalla(`⚠️ Te faltan flores para ese pedido. Tienes ${tienes} de ${pedido.cantidad}.`, "error");
+                avisarEnPantalla(`⚠️ Faltan unidades. Tienes ${tienes} de ${pedido.cantidad} para este pedido.`, "error");
                 return;
             }
 
@@ -362,7 +357,7 @@
             gameState.money += pedido.recompensa;
 
             const nuevoTipo = catalogoPlantas[Math.floor(Math.random() * catalogoPlantas.length)];
-            const clientesNombres = ["👨 Don Pedro", "👩 Doña Carmen", "🧑‍🦰 Lucas", "👩‍🦱 Elena", "👴 Abuelo José"];
+            const clientesNombres = ["👴 Don Mateo", "👩 Doña Carmen", "🧑‍🦰 Lucas", "👩‍🦱 Elena", "👴 Abuelo José"];
             gameState.pedidos[indexPedido] = {
                 id: Date.now(),
                 cliente: clientesNombres[Math.floor(Math.random() * clientesNombres.length)],
@@ -407,6 +402,7 @@
                             <p class="text-xl font-black text-stone-900 mt-1">
                                 Pide: ${ped.cantidad} ${infoPlanta.icono} ${infoPlanta.nombre}
                             </p>
+                            <p class="text-sm text-stone-600 italic">(${infoPlanta.desc})</p>
                             <p class="text-base font-extrabold text-emerald-800 mt-1">
                                 Tienes: ${tienes} de ${ped.cantidad}
                             </p>
@@ -428,13 +424,14 @@
                 const enInventario = gameState.inventario[planta.tipo] || 0;
 
                 container.innerHTML += `
-                    <button onclick="seleccionarHerramienta('semilla:${planta.tipo}', '${planta.icono} SEMILLA DE ${planta.nombre.toUpperCase()}')" 
+                    <button onclick="seleccionarHerramienta('semilla:${planta.tipo}', '${planta.icono} ${planta.nombre.toUpperCase()}')" 
                             id="${btnId}" 
-                            class="tool-btn ${esActiva ? 'ring-4 ring-amber-300 scale-105' : ''} bg-emerald-800 border-2 border-emerald-400 text-white px-4 py-2 rounded-2xl flex items-center gap-2 shrink-0 cursor-pointer">
+                            class="tool-btn ${esActiva ? 'ring-4 ring-amber-300 scale-105' : ''} bg-emerald-800 border-2 border-emerald-400 text-white px-4 py-2.5 rounded-2xl flex items-center gap-3 shrink-0 cursor-pointer">
                         <span class="text-3xl">${planta.icono}</span>
                         <div class="text-left">
-                            <p class="text-sm font-black leading-tight">${planta.nombre}</p>
-                            <p class="text-sm font-black text-amber-300">🪙 ${planta.costo} | Tienes: ${enInventario}</p>
+                            <p class="text-base font-black leading-tight">${planta.nombre}</p>
+                            <p class="text-xs font-bold text-amber-200">${planta.desc}</p>
+                            <p class="text-sm font-black text-amber-300 mt-0.5">🪙 ${planta.costo} | Tienes: ${enInventario}</p>
                         </div>
                     </button>
                 `;
@@ -477,7 +474,6 @@
                         tamanoVisual = "text-7xl";
                     }
 
-                    // Cartel de estado súper claro en la esquina
                     let estadoTexto = "";
                     if (muerta) {
                         estadoTexto = `<span class="bg-rose-600 text-white text-base font-black px-3 py-1 rounded-xl border-2 border-white">❌ MARCHITA</span>`;
@@ -498,14 +494,12 @@
                                 ${estadoTexto}
                             </div>
 
-                            <!-- Planta Grande -->
                             <div class="flex-1 flex items-center justify-center my-1">
                                 <span class="${tamanoVisual} ${muerta ? '' : 'planta-viva'} select-none">
                                     ${visualPlanta}
                                 </span>
                             </div>
 
-                            <!-- Indicadores Grandes y Claros -->
                             <div class="w-full bg-black/75 rounded-2xl p-2.5 space-y-2">
                                 <div class="flex justify-between text-base font-black text-white px-1">
                                     <span>🌱 Crecimiento:</span>
@@ -532,7 +526,6 @@
             renderizarHuerto();
         }
 
-        // Ritmo más tranquilo (cada 5 segundos) para que juegue sin apuros
         setInterval(() => {
             actualizarClima();
             const climaObj = climas.find(c => c.id === gameState.clima) || climas[0];

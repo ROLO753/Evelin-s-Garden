@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Evelin's Garden</title>
+    <title>Evelin's Garden: Defensa y Combate</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         * {
@@ -20,558 +19,251 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background-color: #1a2e1a;
+            background-color: #0f172a;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        /* Textura de césped estilo juego móvil */
-        .game-world {
-            background-color: #4ade80;
+        .battle-world {
+            background-color: #1e293b;
             background-image: 
-                radial-gradient(#22c55e 15%, transparent 16%),
-                radial-gradient(#86efac 10%, transparent 11%);
-            background-size: 40px 40px;
-            background-position: 0 0, 20px 20px;
-            box-shadow: inset 0 0 60px rgba(6, 78, 59, 0.45);
+                radial-gradient(#334155 15%, transparent 16%),
+                radial-gradient(#0f172a 10%, transparent 11%);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
         }
 
-        /* Parcela 2.5D con profundidad */
-        .plot-3d {
+        .plot-battle {
             background: linear-gradient(145deg, #78350f, #451a03);
-            box-shadow: 
-                0 6px 0 #290f02,
-                0 10px 15px rgba(0,0,0,0.4),
-                inset 0 2px 4px rgba(255,255,255,0.15);
-            transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 5px 0 #290f02, 0 8px 12px rgba(0,0,0,0.5);
+            transition: transform 0.08s ease;
         }
-        .plot-3d:active {
-            transform: translateY(4px) scale(0.96);
-            box-shadow: 0 2px 0 #290f02, 0 4px 8px rgba(0,0,0,0.4);
-        }
-        .plot-wet {
-            background: linear-gradient(145deg, #451a03, #270e02);
+        .plot-battle:active {
+            transform: scale(0.94);
         }
 
-        @keyframes sway {
-            0%, 100% { transform: rotate(-4deg) scale(1); }
-            50% { transform: rotate(4deg) scale(1.06); }
+        @keyframes danioFlash {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(2) sepia(1) hue-rotate(-50deg); }
         }
-        .plant-sway {
-            animation: sway 2.4s ease-in-out infinite;
-            transform-origin: bottom center;
+        .enemigo-herido {
+            animation: danioFlash 0.2s ease;
         }
 
-        @keyframes popFloat {
-            0% { transform: translate(-50%, 0) scale(0.5); opacity: 1; }
-            70% { transform: translate(-50%, -45px) scale(1.2); opacity: 1; }
-            100% { transform: translate(-50%, -65px) scale(1); opacity: 0; }
+        @keyframes explosionParticula {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.4); opacity: 0; }
         }
-        .float-particle {
-            animation: popFloat 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .particula-explosion {
+            animation: explosionParticula 0.5s ease-out forwards;
             pointer-events: none;
         }
 
-        @keyframes flyAround {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(80px, -40px) rotate(15deg); }
-            50% { transform: translate(140px, 20px) rotate(-10deg); }
-            75% { transform: translate(40px, 50px) rotate(20deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-        }
-        .ambient-bug {
-            animation: flyAround 12s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        /* Ocultar barra de scroll en el dock */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="flex flex-col justify-between game-world relative">
+<body class="flex flex-col justify-between battle-world relative">
 
-    <!-- ENTORNO AMBIENTAL (Cielo superior sutil + Cerca + Bichos vivos) -->
-    <div class="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-sky-400/90 via-sky-300/40 to-transparent pointer-events-none z-0"></div>
-    <div class="absolute top-16 left-6 text-2xl ambient-bug z-10">🦋</div>
-    <div class="absolute top-28 right-12 text-xl ambient-bug z-10" style="animation-delay: -5s; animation-duration: 15s;">🐝</div>
-
-    <!-- HUD SUPERIOR FLOTANTE (Estilo App Nativa) -->
-    <header class="relative z-20 px-3 pt-3 flex items-center justify-between gap-2">
+    <!-- HUD SUPERIOR DE COMBATE -->
+    <header class="relative z-20 px-3 pt-3 flex items-center justify-between gap-2 bg-slate-950/80 backdrop-blur-md pb-3 border-b border-white/10">
         
-        <!-- Nivel y XP -->
-        <div class="flex items-center gap-2 bg-slate-900/85 backdrop-blur-md border-2 border-amber-400/60 rounded-full pl-1.5 pr-3.5 py-1 shadow-lg">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center font-black text-slate-950 text-sm shadow">
-                <span id="hud-level">1</span>
-            </div>
-            <div class="w-16">
-                <div class="flex justify-between text-[10px] font-bold text-amber-200 leading-none mb-1">
-                    <span>NVL</span>
-                    <span id="hud-xp-text">0/100</span>
-                </div>
-                <div class="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                    <div id="hud-xp-bar" class="h-full bg-amber-400 transition-all duration-300" style="width: 0%"></div>
-                </div>
-            </div>
+        <!-- Oleada y Vidas del Jardín -->
+        <div class="flex items-center gap-2 bg-slate-900 border-2 border-rose-500/60 rounded-full px-3.5 py-1 shadow-lg text-white">
+            <span class="text-base">❤️</span>
+            <span id="hud-lives" class="font-black text-rose-400 text-sm">5 / 5</span>
         </div>
 
-        <!-- Botón Flotante de Pedidos con Notificación -->
-        <button onclick="toggleOrdersModal(true)" class="relative bg-amber-500 active:scale-95 transition border-2 border-amber-200 text-slate-950 font-black text-xs px-3.5 py-2 rounded-full shadow-lg flex items-center gap-1.5">
-            <span class="text-base">📜</span>
-            <span>PEDIDOS</span>
-            <span id="orders-badge" class="hidden absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border border-white animate-bounce">!</span>
-        </button>
+        <!-- Oleada actual -->
+        <div class="bg-amber-500 text-slate-950 font-black text-xs px-3 py-1 rounded-full shadow border border-amber-200">
+            OLEADA <span id="hud-wave">1</span>
+        </div>
 
-        <!-- Monedas -->
-        <div class="flex items-center gap-1.5 bg-slate-900/85 backdrop-blur-md border-2 border-amber-400/60 rounded-full px-3.5 py-1.5 shadow-lg">
+        <!-- Monedas / Puntuación de Batalla -->
+        <div class="flex items-center gap-1.5 bg-slate-900 border-2 border-amber-400/60 rounded-full px-3.5 py-1 shadow-lg">
             <span class="text-base">🪙</span>
-            <span id="hud-money" class="font-black text-amber-300 text-sm tracking-wide">250</span>
+            <span id="hud-money" class="font-black text-amber-300 text-sm">150</span>
         </div>
     </header>
 
-    <!-- NOTIFICACIÓN TOAST FLOTANTE (No ocupa espacio fijo) -->
-    <div id="toast-container" class="fixed top-16 inset-x-0 flex justify-center pointer-events-none z-40 px-4"></div>
-
-    <!-- TABLERO CENTRAL DEL HUERTO (Centrado, sin scroll, 2.5D) -->
+    <!-- ÁREA DE BATALLA / HUERTO -->
     <main class="flex-1 flex flex-col items-center justify-center px-4 relative z-10">
         
-        <!-- Cerca decorativa superior -->
-        <div class="w-full max-w-md flex justify-between px-4 text-amber-900/60 text-xs font-black tracking-widest mb-2">
-            <span>🌲 🪵🪵🪵 🌲</span>
-            <span id="weather-pill" class="bg-black/25 text-white px-2.5 py-0.5 rounded-full backdrop-blur-xs">☀️ Soleado</span>
-            <span>🌲 🪵🪵🪵 🌲</span>
+        <!-- Aviso de Combate -->
+        <div id="battle-alert" class="mb-3 bg-rose-950/90 border-2 border-rose-600 text-rose-200 font-black text-xs px-4 py-1.5 rounded-full shadow-lg animate-pulse text-center">
+            ⚔️ ¡DEFIENDE EL HUERTO! Toca a las plagas para destruirlas.
         </div>
 
-        <!-- Grid de Parcelas -->
-        <div id="farm-grid" class="w-full max-w-md grid grid-cols-3 gap-3 sm:gap-4 p-3 bg-emerald-800/30 rounded-3xl border-2 border-emerald-950/20 backdrop-blur-[1px]">
+        <!-- Grid de Parcelas de Defensa (Gardenscapes estilo combate) -->
+        <div id="farm-grid" class="w-full max-w-md grid grid-cols-3 gap-3 p-3 bg-slate-900/50 rounded-3xl border-2 border-slate-700/50 backdrop-blur-xs">
             <!-- Generado por JS -->
         </div>
-
-        <!-- Botón rápido para comprar parcela si hay espacio -->
-        <button id="btn-expand" onclick="comprarParcela()" class="mt-3 bg-slate-900/80 hover:bg-slate-900 active:scale-95 text-emerald-300 border border-emerald-500/50 text-xs font-black px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 transition">
-            <span>➕ Expandir tierra</span>
-            <span class="text-amber-300">🪙 100</span>
-        </button>
     </main>
 
-    <!-- DOCK INFERIOR ESTILO JUEGO MÓVIL -->
-    <footer class="relative z-20 bg-slate-950/90 backdrop-blur-md border-t border-white/15 pt-2 pb-4 px-2 rounded-t-3xl shadow-[0_-10px_25px_rgba(0,0,0,0.4)]">
-        
-        <!-- Fila 1: Herramientas de Acción Rápida -->
-        <div class="flex justify-center gap-2 mb-2.5">
-            <button onclick="setTool('water')" id="tool-water" class="tool-btn ring-2 ring-amber-400 bg-sky-600 text-white px-3.5 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black shadow active:scale-95 transition">
-                <span class="text-base">💧</span> Regar
+    <!-- DOCK INFERIOR DE ARMAS Y DEFENSA -->
+    <footer class="relative z-20 bg-slate-950 border-t border-white/15 pt-2 pb-4 px-3 rounded-t-3xl shadow-2xl">
+        <div class="flex justify-between items-center gap-2">
+            <button onclick="comprarArma('torre')" class="flex-1 bg-emerald-700 active:scale-95 text-white font-black text-xs py-2.5 px-2 rounded-2xl border border-emerald-400/50 flex flex-col items-center shadow">
+                <span class="text-2xl">🌵</span>
+                <span>Planta Espinosa (🪙50)</span>
             </button>
-            <button onclick="setTool('fertilize')" id="tool-fertilize" class="tool-btn bg-amber-700 text-white px-3.5 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black shadow active:scale-95 transition">
-                <span class="text-base">⚡</span> Abono
+            <button onclick="comprarArma('bomba')" class="flex-1 bg-rose-700 active:scale-95 text-white font-black text-xs py-2.5 px-2 rounded-2xl border border-rose-400/50 flex flex-col items-center shadow">
+                <span class="text-2xl">💣</span>
+                <span>Bomba Rápida (🪙80)</span>
             </button>
-            <button onclick="setTool('shovel')" id="tool-shovel" class="tool-btn bg-rose-800 text-white px-3.5 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black shadow active:scale-95 transition">
-                <span class="text-base">🪓</span> Quitar
+            <button onclick="repararJardin()" class="flex-1 bg-sky-700 active:scale-95 text-white font-black text-xs py-2.5 px-2 rounded-2xl border border-sky-400/50 flex flex-col items-center shadow">
+                <span class="text-2xl">💖</span>
+                <span>Curar Vida (🪙60)</span>
             </button>
-        </div>
-
-        <!-- Fila 2: Carrusel Horizontal de Semillas -->
-        <div id="seed-dock" class="flex items-center gap-2 overflow-x-auto no-scrollbar px-2">
-            <!-- Generado por JS -->
         </div>
     </footer>
 
-    <!-- MODAL FLOTANTE DE PEDIDOS (Tipo App de Juego) -->
-    <div id="orders-modal" class="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-amber-50 border-4 border-amber-800 rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl animate-[popFloat_0.2s_ease-out]">
-            <div class="bg-amber-800 px-4 py-3 flex justify-between items-center text-white">
-                <h2 class="font-black text-base flex items-center gap-2">📜 Tablón de Encargos</h2>
-                <button onclick="toggleOrdersModal(false)" class="w-7 h-7 bg-amber-950 rounded-full font-black text-sm flex items-center justify-center">✕</button>
-            </div>
-            <div id="orders-list" class="p-3 space-y-2.5 max-h-[60dvh] overflow-y-auto">
-                <!-- Generado por JS -->
-            </div>
-        </div>
-    </div>
-
     <script>
-        const CROPS = [
-            { id: 'daisy', name: 'Margarita', icon: '🌼', cost: 15, sell: 40, xp: 15, time: 12, reqLvl: 1 },
-            { id: 'mint', name: 'Menta', icon: '🌿', cost: 25, sell: 65, xp: 22, time: 18, reqLvl: 1 },
-            { id: 'sunflower', name: 'Girasol', icon: '🌻', cost: 45, sell: 115, xp: 35, time: 25, reqLvl: 2 },
-            { id: 'lavender', name: 'Lavanda', icon: '🪻', cost: 75, sell: 190, xp: 50, time: 35, reqLvl: 3 },
-            { id: 'rose', name: 'Rosa', icon: '🌹', cost: 120, sell: 310, xp: 80, time: 45, reqLvl: 4 },
-            { id: 'crystal', name: 'Flor Mística', icon: '💠', cost: 200, sell: 550, xp: 130, time: 60, reqLvl: 5 }
-        ];
-
         let state = {
-            money: 250,
-            xp: 0,
-            level: 1,
-            activeTool: 'water', // 'water', 'fertilize', 'shovel', 'seed:id'
-            inventory: { daisy: 0, mint: 0, sunflower: 0, lavender: 0, rose: 0, crystal: 0 },
+            money: 200,
+            lives: 5,
+            wave: 1,
             plots: [
-                { id: 0, crop: 'daisy', progress: 100, water: 100, event: null },
-                { id: 1, crop: 'mint', progress: 45, water: 70, event: null },
-                { id: 2, crop: null, progress: 0, water: 0, event: 'chest' },
-                { id: 3, crop: null, progress: 0, water: 0, event: null },
-                { id: 4, crop: null, progress: 0, water: 0, event: null },
-                { id: 5, crop: null, progress: 0, water: 0, event: null }
-            ],
-            orders: [
-                { id: 1, client: '🤠 Mateo', crop: 'daisy', qty: 2, reward: 120, xp: 40 },
-                { id: 2, client: '👩‍🌾 Rosa', crop: 'mint', qty: 1, reward: 100, xp: 35 }
+                { id: 0, tipo: 'flor', hp: 100, enemigo: null },
+                { id: 1, tipo: 'flor', hp: 100, enemigo: null },
+                { id: 2, tipo: 'flor', hp: 100, enemigo: null },
+                { id: 3, tipo: 'flor', hp: 100, enemigo: null },
+                { id: 4, tipo: 'flor', hp: 100, enemigo: null },
+                { id: 5, tipo: 'flor', hp: 100, enemigo: null }
             ]
         };
 
-        function save() {
-            localStorage.setItem('evelins_app_v1', JSON.stringify(state));
-        }
+        const ENEMIGOS = [
+            { nombre: 'Gusano', icono: '🐛', hp: 2, recompensa: 25, dao: 1 },
+            { nombre: 'Escarabajo', icono: '🪲', hp: 4, recompensa: 45, dao: 2 },
+            { nombre: 'Monstruo Raíz', icono: '🧟', hp: 6, recompensa: 80, dao: 3 }
+        ];
 
-        function load() {
-            const data = localStorage.getItem('evelins_app_v1');
-            if (data) state = JSON.parse(data);
-        }
-
-        function toast(text, colorClass = 'bg-slate-900 text-white border-amber-400') {
-            const container = document.getElementById('toast-container');
-            const el = document.createElement('div');
-            el.className = `${colorClass} border-2 px-4 py-1.5 rounded-full text-xs font-black shadow-xl transition-all duration-300 transform translate-y-0 opacity-100`;
-            el.innerText = text;
-            container.innerHTML = '';
-            container.appendChild(el);
-            setTimeout(() => {
-                el.classList.add('opacity-0', '-translate-y-3');
-                setTimeout(() => el.remove(), 300);
-            }, 1800);
-        }
-
-        function spawnFloating(plotIdx, text, color = 'text-amber-300') {
+        function explosionEfecto(plotIdx, icono) {
             const plotEl = document.getElementById(`plot-${plotIdx}`);
-            if (!plotEl) return;
-            const badge = document.createElement('div');
-            badge.className = `float-particle absolute top-1/2 left-1/2 font-black text-base ${color} drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] z-30 whitespace-nowrap`;
-            badge.innerText = text;
-            plotEl.appendChild(badge);
-            setTimeout(() => badge.remove(), 850);
-        }
-
-        function addXp(amount) {
-            state.xp += amount;
-            const needed = state.level * 100;
-            if (state.xp >= needed) {
-                state.xp -= needed;
-                state.level++;
-                toast(`🎉 ¡SUBISTE A NIVEL ${state.level}!`, 'bg-amber-400 text-slate-950 border-white');
+            if(!plotEl) return;
+            for(let i=0; i<6; i++) {
+                const p = document.createElement('div');
+                p.className = 'absolute text-xl particula-explosion z-30';
+                p.innerText = icono;
+                const tx = (Math.random() - 0.5) * 120;
+                const ty = (Math.random() - 0.5) * 120;
+                p.style.setProperty('--tx', `${tx}px`);
+                p.style.setProperty('--ty', `${ty}px`);
+                plotEl.appendChild(p);
+                setTimeout(() => p.remove(), 500);
             }
         }
 
-        function setTool(tool) {
-            state.activeTool = tool;
-            renderDock();
-        }
-
-        function handlePlotTap(idx) {
+        function golpearEnemigo(idx) {
             const p = state.plots[idx];
+            if (!p.enemigo) return;
 
-            // 1. Eventos especiales (Cofre o Mariposa) tienen prioridad al tocar
-            if (p.event === 'chest') {
-                p.event = null;
-                const bonus = 50 + (state.level * 15);
-                state.money += bonus;
-                addXp(25);
-                spawnFloating(idx, `+🪙 ${bonus}`, 'text-yellow-300');
-                save(); renderAll();
-                return;
-            }
-            if (p.event === 'butterfly') {
-                p.event = null;
-                state.money += 35;
-                addXp(20);
-                spawnFloating(idx, `🦋 +🪙 35`, 'text-sky-300');
-                save(); renderAll();
-                return;
+            p.enemigo.hp -= 1;
+            const el = document.getElementById(`plot-${idx}`);
+            if(el) {
+                el.classList.add('enemigo-herido');
+                setTimeout(() => el.classList.remove('enemigo-herido'), 200);
             }
 
-            // 2. Si está madura, siempre cosecha con un toque sin importar la herramienta
-            if (p.crop && p.progress >= 100) {
-                const info = CROPS.find(c => c.id === p.crop);
-                state.inventory[p.crop] = (state.inventory[p.crop] || 0) + 1;
-                addXp(info.xp);
-                spawnFloating(idx, `+1 ${info.icon}`, 'text-emerald-300');
-                p.crop = null;
-                p.progress = 0;
-                p.water = 0;
-                save(); renderAll();
-                return;
+            if (p.enemigo.hp <= 0) {
+                explosionEfecto(idx, '💥');
+                state.money += p.enemigo.recompensa;
+                p.enemigo = null;
             }
+            renderBattle();
+        }
 
-            // 3. Sembrar si la parcela está vacía y hay semilla seleccionada
-            if (!p.crop) {
-                if (state.activeTool.startsWith('seed:')) {
-                    const cropId = state.activeTool.split(':')[1];
-                    const info = CROPS.find(c => c.id === cropId);
-                    if (state.money < info.cost) {
-                        toast('Monedas insuficientes 🪙', 'bg-rose-600 text-white border-white');
-                        return;
+        function comprarArma(tipo) {
+            if (tipo === 'torre' && state.money >= 50) {
+                state.money -= 50;
+                // Añade defensa automática a una parcela aleatoria
+                const libres = state.plots.filter(p => p.tipo === 'flor');
+                if(libres.length > 0) {
+                    libres[0].tipo = 'defensa';
+                }
+            } else if (tipo === 'bomba' && state.money >= 80) {
+                state.money -= 80;
+                // Mata a todos los enemigos actuales en pantalla de golpe
+                state.plots.forEach((p, idx) => {
+                    if(p.enemigo) {
+                        explosionEfecto(idx, '🔥');
+                        state.money += p.enemigo.recompensa;
+                        p.enemigo = null;
                     }
-                    state.money -= info.cost;
-                    p.crop = cropId;
-                    p.progress = 5;
-                    p.water = 80;
-                    spawnFloating(idx, `🌱 -🪙${info.cost}`, 'text-white');
-                    save(); renderAll();
-                } else {
-                    toast('Elige una semilla abajo 👇');
-                }
-                return;
+                });
+            } else if (tipo === 'reparar' && state.money >= 60) {
+                state.money -= 60;
+                state.lives = Math.min(5, state.lives + 2);
             }
-
-            // 4. Acciones sobre planta en crecimiento
-            if (state.activeTool === 'water') {
-                p.water = 100;
-                p.progress = Math.min(100, p.progress + 20);
-                spawnFloating(idx, '💧 +20%', 'text-sky-300');
-            } else if (state.activeTool === 'fertilize') {
-                if (state.money < 10) {
-                    toast('Abono cuesta 🪙 10', 'bg-rose-600 text-white border-white');
-                    return;
-                }
-                state.money -= 10;
-                p.progress = Math.min(100, p.progress + 45);
-                spawnFloating(idx, '⚡ +45%', 'text-amber-300');
-            } else if (state.activeTool === 'shovel') {
-                p.crop = null;
-                p.progress = 0;
-                p.water = 0;
-                spawnFloating(idx, '🪓 Limpio', 'text-stone-300');
-            } else if (state.activeTool.startsWith('seed:')) {
-                // Si toca con una semilla sobre una planta creciendo, la riega por comodidad
-                p.water = 100;
-                p.progress = Math.min(100, p.progress + 15);
-                spawnFloating(idx, '💧 +15%', 'text-sky-300');
-            }
-
-            save(); renderAll();
+            renderBattle();
         }
 
-        function deliverOrder(orderIdx) {
-            const ord = state.orders[orderIdx];
-            if ((state.inventory[ord.crop] || 0) < ord.qty) return;
-
-            state.inventory[ord.crop] -= ord.qty;
-            state.money += ord.reward;
-            addXp(ord.xp);
-            toast(`✅ ¡Entregado! +🪙 ${ord.reward}`, 'bg-emerald-500 text-slate-950 border-white');
-
-            // Nuevo pedido acorde al nivel
-            const unlocked = CROPS.filter(c => c.reqLvl <= state.level);
-            const pick = unlocked[Math.floor(Math.random() * unlocked.length)];
-            const clients = ['🤠 Mateo', '👩‍🌾 Rosa', '👧 Sofía', '🧑‍🍳 Lucas', '🧙‍♂️ Elías'];
-            const qty = Math.floor(Math.random() * 2) + 1;
-
-            state.orders[orderIdx] = {
-                id: Date.now(),
-                client: clients[Math.floor(Math.random() * clients.length)],
-                crop: pick.id,
-                qty: qty,
-                reward: Math.round(pick.sell * qty * 1.5),
-                xp: pick.xp * qty
-            };
-
-            save(); renderAll();
+        function repararJardin() {
+            comprarArma('reparar');
         }
 
-        function comprarParcela() {
-            if (state.plots.length >= 12) return;
-            if (state.money < 100) {
-                toast('Necesitas 🪙 100', 'bg-rose-600 text-white border-white');
-                return;
-            }
-            state.money -= 100;
-            state.plots.push({ id: state.plots.length, crop: null, progress: 0, water: 0, event: 'chest' });
-            save(); renderAll();
-        }
-
-        function toggleOrdersModal(show) {
-            const modal = document.getElementById('orders-modal');
-            if (show) {
-                renderOrders();
-                modal.classList.remove('hidden');
-            } else {
-                modal.classList.add('hidden');
-            }
-        }
-
-        function renderHUD() {
+        function renderBattle() {
             document.getElementById('hud-money').innerText = state.money;
-            document.getElementById('hud-level').innerText = state.level;
-            const needed = state.level * 100;
-            document.getElementById('hud-xp-text').innerText = `${state.xp}/${needed}`;
-            document.getElementById('hud-xp-bar').style.width = `${(state.xp / needed) * 100}%`;
+            document.getElementById('hud-lives').innerText = `${state.lives} / 5`;
+            document.getElementById('hud-wave').innerText = state.wave;
 
-            // Notificación en botón de pedidos si alguno está listo
-            const hasReady = state.orders.some(o => (state.inventory[o.crop] || 0) >= o.qty);
-            const badge = document.getElementById('orders-badge');
-            if (hasReady) badge.classList.remove('hidden');
-            else badge.classList.add('hidden');
-
-            const btnExpand = document.getElementById('btn-expand');
-            if (state.plots.length >= 12) btnExpand.classList.add('hidden');
-        }
-
-        function renderGrid() {
             const grid = document.getElementById('farm-grid');
             grid.innerHTML = '';
 
             state.plots.forEach((p, idx) => {
-                const isWet = p.water > 30;
-                const isReady = p.crop && p.progress >= 100;
-                
-                let content = '';
-                let badge = '';
-
-                if (p.event === 'chest') {
-                    content = `<span class="text-4xl animate-bounce">🎁</span>`;
-                    badge = `<span class="absolute -top-2 -right-2 bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded-full shadow">!</span>`;
-                } else if (p.event === 'butterfly') {
-                    content = `<span class="text-4xl animate-pulse">🦋</span>`;
-                } else if (!p.crop) {
-                    content = `<span class="text-xl opacity-20">➕</span>`;
-                } else {
-                    const info = CROPS.find(c => c.id === p.crop);
-                    let sprite = '🌱';
-                    let size = 'text-3xl';
-                    if (isReady) {
-                        sprite = info.icon;
-                        size = 'text-5xl drop-shadow-md';
-                    } else if (p.progress >= 50) {
-                        sprite = '🌿';
-                        size = 'text-4xl';
-                    }
-
-                    content = `
-                        <span class="${size} ${isReady ? 'plant-sway' : ''}">${sprite}</span>
-                        ${!isReady ? `
-                        <div class="w-4/5 h-1.5 bg-black/60 rounded-full overflow-hidden mt-1">
-                            <div class="h-full ${p.water < 25 ? 'bg-sky-400' : 'bg-emerald-400'} transition-all" style="width: ${p.progress}%"></div>
-                        </div>` : ''}
+                let contenido = '';
+                if (p.enemigo) {
+                    contenido = `
+                        <div class="text-5xl animate-bounce filter drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">${p.enemigo.icono}</div>
+                        <div class="absolute top-2 bg-rose-600 text-white font-black text-xs px-2 py-0.5 rounded-full border border-white">HP: ${p.enemigo.hp}</div>
                     `;
-
-                    if (isReady) {
-                        badge = `<span class="absolute -top-2 -right-2 bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full shadow animate-bounce">🧺</span>`;
-                    } else if (p.water < 25) {
-                        badge = `<span class="absolute -top-2 -right-2 bg-sky-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow animate-pulse">💧</span>`;
-                    }
+                } else if (p.tipo === 'defensa') {
+                    contenido = `<span class="text-5xl">🌵</span><span class="absolute bottom-2 text-[10px] font-black text-emerald-300">DEFENSA</span>`;
+                } else {
+                    contenido = `<span class="text-5xl">🌻</span><span class="absolute bottom-2 text-[10px] font-black text-amber-200">FLOR SANA</span>`;
                 }
 
                 grid.innerHTML += `
-                    <div id="plot-${idx}" onclick="handlePlotTap(${idx})" 
-                         class="plot-3d ${isWet ? 'plot-wet' : ''} aspect-square rounded-2xl border-2 ${isReady ? 'border-amber-400' : 'border-amber-950/80'} flex flex-col items-center justify-center relative cursor-pointer">
-                        ${badge}
-                        ${content}
+                    <div id="plot-${idx}" onclick="golpearEnemigo(${idx})" 
+                         class="plot-battle aspect-square rounded-2xl border-2 ${p.enemigo ? 'border-rose-500 animate-pulse' : 'border-amber-900'} flex flex-col items-center justify-center relative cursor-pointer">
+                        ${contenido}
                     </div>
                 `;
             });
         }
 
-        function renderDock() {
-            // Actualizar botones de herramientas
-            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('ring-2', 'ring-amber-400', 'scale-105'));
-            const activeBtn = document.getElementById(`tool-${state.activeTool}`);
-            if (activeBtn) activeBtn.classList.add('ring-2', 'ring-amber-400', 'scale-105');
-
-            // Renderizar semillas
-            const dock = document.getElementById('seed-dock');
-            dock.innerHTML = '';
-
-            CROPS.forEach(c => {
-                const locked = state.level < c.reqLvl;
-                const isSelected = state.activeTool === `seed:${c.id}`;
-                const stock = state.inventory[c.id] || 0;
-
-                if (locked) {
-                    dock.innerHTML += `
-                        <div class="bg-slate-900/60 border border-slate-700 px-3 py-2 rounded-2xl flex flex-col items-center min-w-[68px] opacity-50 shrink-0">
-                            <span class="text-xl">🔒</span>
-                            <span class="text-[10px] font-black text-slate-400 mt-0.5">Nvl ${c.reqLvl}</span>
-                        </div>
-                    `;
-                } else {
-                    dock.innerHTML += `
-                        <button onclick="setTool('seed:${c.id}')" 
-                                class="relative ${isSelected ? 'bg-amber-500 text-slate-950 ring-2 ring-white scale-105' : 'bg-slate-800 text-white border border-slate-600'} px-3 py-1.5 rounded-2xl flex flex-col items-center min-w-[70px] shrink-0 active:scale-95 transition">
-                            ${stock > 0 ? `<span class="absolute -top-1.5 -right-1.5 bg-emerald-500 text-slate-950 text-[10px] font-black px-1.5 rounded-full border border-slate-900">${stock}</span>` : ''}
-                            <span class="text-2xl leading-none">${c.icon}</span>
-                            <span class="text-[11px] font-black mt-1 ${isSelected ? 'text-slate-950' : 'text-amber-300'}">🪙${c.cost}</span>
-                        </button>
-                    `;
-                }
-            });
-        }
-
-        function renderOrders() {
-            const list = document.getElementById('orders-list');
-            list.innerHTML = '';
-
-            state.orders.forEach((ord, idx) => {
-                const info = CROPS.find(c => c.id === ord.crop);
-                const have = state.inventory[ord.crop] || 0;
-                const canDeliver = have >= ord.qty;
-
-                list.innerHTML += `
-                    <div class="bg-white border-2 ${canDeliver ? 'border-emerald-500' : 'border-amber-200'} rounded-2xl p-3 flex items-center justify-between gap-2 shadow-xs">
-                        <div class="flex items-center gap-2.5">
-                            <div class="text-3xl bg-amber-100 w-12 h-12 rounded-xl flex items-center justify-center">${info.icon}</div>
-                            <div>
-                                <p class="text-xs font-black text-amber-900">${ord.client}</p>
-                                <p class="text-sm font-black text-slate-900">${info.name} <span class="${canDeliver ? 'text-emerald-600' : 'text-rose-600'}">(${have}/${ord.qty})</span></p>
-                                <p class="text-[11px] font-bold text-amber-600">+🪙 ${ord.reward} • +${ord.xp} XP</p>
-                            </div>
-                        </div>
-                        <button onclick="deliverOrder(${idx})" 
-                                class="${canDeliver ? 'bg-emerald-500 active:scale-95 text-slate-950 shadow' : 'bg-slate-200 text-slate-400'} font-black text-xs px-3 py-2.5 rounded-xl transition">
-                            ${canDeliver ? 'ENTREGAR' : 'Falta'}
-                        </button>
-                    </div>
-                `;
-            });
-        }
-
-        function renderAll() {
-            renderHUD();
-            renderGrid();
-            renderDock();
-            if (!document.getElementById('orders-modal').classList.contains('hidden')) {
-                renderOrders();
-            }
-        }
-
-        // Bucle principal del juego (crecimiento fluido y eventos espontáneos)
+        // Sistema de oleadas y ataques enemigos automáticos en tiempo real
         setInterval(() => {
-            let changed = false;
+            if (state.lives <= 0) return;
+
+            // Aparecer enemigos en parcelas libres
             state.plots.forEach(p => {
-                if (p.crop && p.progress < 100) {
-                    const info = CROPS.find(c => c.id === p.crop);
-                    const step = (100 / info.time) * (p.water > 20 ? 1.3 : 0.6);
-                    p.progress = Math.min(100, p.progress + step);
-                    p.water = Math.max(0, p.water - 2);
-                    changed = true;
+                if (!p.enemigo && Math.random() < 0.35) {
+                    const template = ENEMIGOS[Math.floor(Math.random() * Math.min(ENEMIGOS.length, state.wave))];
+                    p.enemigo = { ...template, hp: template.hp + Math.floor(state.wave / 2) };
+                } else if (p.enemigo) {
+                    // El enemigo ataca la flor o defensa
+                    if (p.tipo === 'defensa') {
+                        p.tipo = 'flor'; // La defensa frena un ataque
+                        p.enemigo.hp -= 1;
+                        if(p.enemigo.hp <= 0) p.enemigo = null;
+                    } else {
+                        state.lives -= p.enemigo.dao;
+                        if (state.lives <= 0) {
+                            state.lives = 0;
+                            alert('💥 ¡El huerto fue destruido! Reiniciando defensa...');
+                            location.reload();
+                        }
+                    }
                 }
             });
 
-            // Eventos aleatorios en parcelas libres o con flores
-            if (Math.random() < 0.15) {
-                const candidates = state.plots.filter(p => !p.event);
-                if (candidates.length > 0) {
-                    const target = candidates[Math.floor(Math.random() * candidates.length)];
-                    target.event = target.crop ? 'butterfly' : 'chest';
-                    changed = true;
-                }
-            }
+            // Subir de oleada cada cierto tiempo
+            state.wave++;
+            renderBattle();
+        }, 5000);
 
-            if (changed) {
-                save();
-                renderGrid();
-            }
-        }, 1000);
-
-        load();
-        renderAll();
+        renderBattle();
     </script>
 </body>
 </html>

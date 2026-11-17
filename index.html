@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Evelin's Garden: Defensa y Combate</title>
+    <title>Evelin's Garden: Battle</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         * {
@@ -19,251 +19,501 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background-color: #0f172a;
+            background-color: #14532d;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        .battle-world {
-            background-color: #1e293b;
+        /* Entorno visual estilo Gardenscapes (Césped iluminado + caminos de piedra) */
+        .garden-estate {
+            background-color: #4ade80;
             background-image: 
-                radial-gradient(#334155 15%, transparent 16%),
-                radial-gradient(#0f172a 10%, transparent 11%);
-            background-size: 32px 32px;
-            background-position: 0 0, 16px 16px;
+                radial-gradient(#22c55e 20%, transparent 21%),
+                radial-gradient(#86efac 15%, transparent 16%);
+            background-size: 36px 36px;
+            background-position: 0 0, 18px 18px;
+            box-shadow: inset 0 0 70px rgba(6, 78, 59, 0.55);
         }
 
-        .plot-battle {
+        .stone-courtyard {
+            background: linear-gradient(145deg, #d6d3d1, #a8a29e);
+            box-shadow: 
+                0 10px 25px rgba(0,0,0,0.45),
+                inset 0 2px 4px rgba(255,255,255,0.6),
+                0 0 0 6px #15803d,
+                0 0 0 10px #14532d;
+        }
+
+        .plot-tile {
             background: linear-gradient(145deg, #78350f, #451a03);
-            box-shadow: 0 5px 0 #290f02, 0 8px 12px rgba(0,0,0,0.5);
-            transition: transform 0.08s ease;
+            box-shadow: 
+                0 5px 0 #290f02,
+                0 8px 12px rgba(0,0,0,0.45),
+                inset 0 2px 3px rgba(255,255,255,0.15);
+            transition: transform 0.06s ease;
         }
-        .plot-battle:active {
-            transform: scale(0.94);
-        }
-
-        @keyframes danioFlash {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(2) sepia(1) hue-rotate(-50deg); }
-        }
-        .enemigo-herido {
-            animation: danioFlash 0.2s ease;
+        .plot-tile:active {
+            transform: translateY(3px) scale(0.94);
+            box-shadow: 0 2px 0 #290f02;
         }
 
-        @keyframes explosionParticula {
-            0% { transform: scale(0.5); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(1.4); opacity: 0; }
+        @keyframes hitShake {
+            0%, 100% { transform: translateX(0); filter: brightness(1); }
+            25% { transform: translateX(-5px) scale(0.95); filter: brightness(2.2) saturate(2); }
+            75% { transform: translateX(5px) scale(0.95); filter: brightness(1.8); }
         }
-        .particula-explosion {
-            animation: explosionParticula 0.5s ease-out forwards;
+        .enemy-hit {
+            animation: hitShake 0.18s ease-in-out;
+        }
+
+        @keyframes dmgFloat {
+            0% { transform: translate(-50%, 0) scale(0.6); opacity: 1; }
+            60% { transform: translate(-50%, -38px) scale(1.25); opacity: 1; }
+            100% { transform: translate(-50%, -55px) scale(1); opacity: 0; }
+        }
+        .dmg-number {
+            animation: dmgFloat 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             pointer-events: none;
         }
 
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes laserFlash {
+            0% { background-color: rgba(99, 102, 241, 0.85); }
+            50% { background-color: rgba(56, 189, 248, 0.9); }
+            100% { background-color: transparent; }
+        }
+        .super-flash {
+            animation: laserFlash 0.4s ease-out forwards;
+        }
+
+        @keyframes burstParticle {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.4); opacity: 0; }
+        }
+        .particle {
+            animation: burstParticle 0.45s ease-out forwards;
+            pointer-events: none;
+        }
     </style>
 </head>
-<body class="flex flex-col justify-between battle-world relative">
+<body class="flex flex-col justify-between garden-estate relative">
 
-    <!-- HUD SUPERIOR DE COMBATE -->
-    <header class="relative z-20 px-3 pt-3 flex items-center justify-between gap-2 bg-slate-950/80 backdrop-blur-md pb-3 border-b border-white/10">
+    <!-- DECORACIÓN SUPERIOR ESTILO JARDÍN -->
+    <div class="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-emerald-950/60 to-transparent pointer-events-none z-0"></div>
+
+    <!-- HUD SUPERIOR FLOTANTE -->
+    <header class="relative z-20 px-3 pt-3 flex items-center justify-between gap-2">
         
-        <!-- Oleada y Vidas del Jardín -->
-        <div class="flex items-center gap-2 bg-slate-900 border-2 border-rose-500/60 rounded-full px-3.5 py-1 shadow-lg text-white">
-            <span class="text-base">❤️</span>
-            <span id="hud-lives" class="font-black text-rose-400 text-sm">5 / 5</span>
+        <!-- Vidas del Jardín -->
+        <div class="flex items-center gap-1.5 bg-slate-900/90 backdrop-blur-md border-2 border-rose-500/80 rounded-full px-3 py-1.5 shadow-lg">
+            <span class="text-sm">❤️</span>
+            <span id="hud-lives" class="font-black text-rose-400 text-xs sm:text-sm">5/5</span>
         </div>
 
-        <!-- Oleada actual -->
-        <div class="bg-amber-500 text-slate-950 font-black text-xs px-3 py-1 rounded-full shadow border border-amber-200">
-            OLEADA <span id="hud-wave">1</span>
+        <!-- Indicador de Oleada y Poder Actual -->
+        <div class="flex items-center gap-1.5 bg-slate-900/90 backdrop-blur-md border-2 border-amber-400/80 rounded-full px-3 py-1.5 shadow-lg">
+            <span class="text-xs font-black text-amber-300">OLEADA <span id="hud-wave">1</span></span>
+            <span class="text-white/30">|</span>
+            <span id="hud-weapon-icon" class="text-sm">🪓</span>
+            <span class="text-xs font-black text-emerald-300">DMG <span id="hud-dmg">1</span></span>
         </div>
 
-        <!-- Monedas / Puntuación de Batalla -->
-        <div class="flex items-center gap-1.5 bg-slate-900 border-2 border-amber-400/60 rounded-full px-3.5 py-1 shadow-lg">
-            <span class="text-base">🪙</span>
-            <span id="hud-money" class="font-black text-amber-300 text-sm">150</span>
+        <!-- Monedas -->
+        <div class="flex items-center gap-1.5 bg-slate-900/90 backdrop-blur-md border-2 border-amber-400/80 rounded-full px-3 py-1.5 shadow-lg">
+            <span class="text-sm">🪙</span>
+            <span id="hud-money" class="font-black text-amber-300 text-xs sm:text-sm">200</span>
         </div>
     </header>
 
-    <!-- ÁREA DE BATALLA / HUERTO -->
+    <!-- TOAST NOTIFICACIONES NO INTRUSIVAS -->
+    <div id="toast-box" class="fixed top-16 inset-x-0 flex justify-center pointer-events-none z-40 px-4"></div>
+
+    <!-- PATIO CENTRAL ESTILO GARDENSCAPES -->
     <main class="flex-1 flex flex-col items-center justify-center px-4 relative z-10">
         
-        <!-- Aviso de Combate -->
-        <div id="battle-alert" class="mb-3 bg-rose-950/90 border-2 border-rose-600 text-rose-200 font-black text-xs px-4 py-1.5 rounded-full shadow-lg animate-pulse text-center">
-            ⚔️ ¡DEFIENDE EL HUERTO! Toca a las plagas para destruirlas.
+        <!-- Encabezado decorativo del jardín -->
+        <div class="w-full max-w-sm flex justify-between items-center px-3 mb-2 text-emerald-950 font-black text-xs">
+            <span class="bg-white/70 backdrop-blur-xs px-2.5 py-0.5 rounded-full shadow-xs">⛲ Fuente Central</span>
+            <span id="wave-status" class="bg-rose-600 text-white px-2.5 py-0.5 rounded-full shadow-xs">⚔️ Defiende</span>
         </div>
 
-        <!-- Grid de Parcelas de Defensa (Gardenscapes estilo combate) -->
-        <div id="farm-grid" class="w-full max-w-md grid grid-cols-3 gap-3 p-3 bg-slate-900/50 rounded-3xl border-2 border-slate-700/50 backdrop-blur-xs">
-            <!-- Generado por JS -->
+        <!-- Tablero de Piedra y Parcelas -->
+        <div class="stone-courtyard w-full max-w-sm rounded-3xl p-3.5">
+            <div id="farm-grid" class="grid grid-cols-3 gap-3">
+                <!-- Generado dinámicamente -->
+            </div>
         </div>
+
     </main>
 
-    <!-- DOCK INFERIOR DE ARMAS Y DEFENSA -->
-    <footer class="relative z-20 bg-slate-950 border-t border-white/15 pt-2 pb-4 px-3 rounded-t-3xl shadow-2xl">
-        <div class="flex justify-between items-center gap-2">
-            <button onclick="comprarArma('torre')" class="flex-1 bg-emerald-700 active:scale-95 text-white font-black text-xs py-2.5 px-2 rounded-2xl border border-emerald-400/50 flex flex-col items-center shadow">
-                <span class="text-2xl">🌵</span>
-                <span>Planta Espinosa (🪙50)</span>
+    <!-- DOCK INFERIOR DE MEJORAS Y SUPERARMAS -->
+    <footer class="relative z-20 bg-slate-950/95 backdrop-blur-md border-t border-white/15 pt-2.5 pb-4 px-2.5 rounded-t-3xl shadow-[0_-10px_25px_rgba(0,0,0,0.5)]">
+        <div class="max-w-md mx-auto grid grid-cols-4 gap-2">
+            
+            <!-- BOTÓN DE MEJORA DE DAÑO POR TOQUE -->
+            <button onclick="upgradeDamage()" id="btn-upgrade" class="bg-gradient-to-b from-amber-500 to-amber-600 active:scale-95 text-slate-950 font-black py-2 px-1 rounded-2xl border-2 border-amber-200 flex flex-col items-center justify-center shadow-lg transition">
+                <div class="flex items-center gap-0.5">
+                    <span id="btn-weapon-icon" class="text-lg leading-none">🪓</span>
+                    <span class="text-[10px] bg-slate-950 text-amber-300 px-1 rounded">Nvl <span id="btn-dmg-lvl">1</span></span>
+                </div>
+                <span class="text-[10px] leading-tight mt-0.5">+DAÑO</span>
+                <span class="text-[11px] font-extrabold">🪙<span id="btn-dmg-cost">40</span></span>
             </button>
-            <button onclick="comprarArma('bomba')" class="flex-1 bg-rose-700 active:scale-95 text-white font-black text-xs py-2.5 px-2 rounded-2xl border border-rose-400/50 flex flex-col items-center shadow">
-                <span class="text-2xl">💣</span>
-                <span>Bomba Rápida (🪙80)</span>
+
+            <!-- DEFENSA AUTOMÁTICA (CACTUS) -->
+            <button onclick="buyCactus()" class="bg-emerald-700 active:scale-95 text-white font-black py-2 px-1 rounded-2xl border border-emerald-400/60 flex flex-col items-center justify-center shadow transition">
+                <span class="text-lg leading-none">🌵</span>
+                <span class="text-[10px] leading-tight mt-0.5">ESCUDO</span>
+                <span class="text-[11px] text-amber-300">🪙50</span>
             </button>
-            <button onclick="repararJardin()" class="flex-1 bg-sky-700 active:scale-95 text-white font-black text-xs py-2.5 px-2 rounded-2xl border border-sky-400/50 flex flex-col items-center shadow">
-                <span class="text-2xl">💖</span>
-                <span>Curar Vida (🪙60)</span>
+
+            <!-- SUPERARMA LÁSER -->
+            <button onclick="useSuperWeapon('laser')" class="bg-indigo-600 active:scale-95 text-white font-black py-2 px-1 rounded-2xl border border-indigo-300/80 flex flex-col items-center justify-center shadow transition">
+                <span class="text-lg leading-none">⚡</span>
+                <span class="text-[10px] leading-tight mt-0.5">LÁSER</span>
+                <span class="text-[11px] text-amber-300">🪙80</span>
             </button>
+
+            <!-- CURAR JARDÍN -->
+            <button onclick="healGarden()" class="bg-rose-700 active:scale-95 text-white font-black py-2 px-1 rounded-2xl border border-rose-400/60 flex flex-col items-center justify-center shadow transition">
+                <span class="text-lg leading-none">💖</span>
+                <span class="text-[10px] leading-tight mt-0.5">CURAR</span>
+                <span class="text-[11px] text-amber-300">🪙60</span>
+            </button>
+
         </div>
     </footer>
 
-    <script>
-        let state = {
-            money: 200,
-            lives: 5,
-            wave: 1,
-            plots: [
-                { id: 0, tipo: 'flor', hp: 100, enemigo: null },
-                { id: 1, tipo: 'flor', hp: 100, enemigo: null },
-                { id: 2, tipo: 'flor', hp: 100, enemigo: null },
-                { id: 3, tipo: 'flor', hp: 100, enemigo: null },
-                { id: 4, tipo: 'flor', hp: 100, enemigo: null },
-                { id: 5, tipo: 'flor', hp: 100, enemigo: null }
-            ]
-        };
+    <!-- PANTALLA DE GAME OVER NATIVA -->
+    <div id="gameover-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-6 text-center">
+        <span class="text-7xl mb-4 animate-bounce">🥀</span>
+        <h2 class="text-3xl font-black text-white mb-2">¡JARDÍN INVADIDO!</h2>
+        <p class="text-amber-300 font-bold text-sm mb-6">Llegaste hasta la Oleada <span id="final-wave">1</span></p>
+        <button onclick="resetGame()" class="bg-emerald-500 active:scale-95 text-slate-950 font-black text-lg px-8 py-3.5 rounded-full border-4 border-emerald-200 shadow-2xl">
+            🔄 VOLVER A JUGAR
+        </button>
+    </div>
 
-        const ENEMIGOS = [
-            { nombre: 'Gusano', icono: '🐛', hp: 2, recompensa: 25, dao: 1 },
-            { nombre: 'Escarabajo', icono: '🪲', hp: 4, recompensa: 45, dao: 2 },
-            { nombre: 'Monstruo Raíz', icono: '🧟', hp: 6, recompensa: 80, dao: 3 }
+    <script>
+        const WEAPONS = [
+            { lvl: 1, icon: '🪓', name: 'Hacha de Jardín' },
+            { lvl: 2, icon: '⚔️', name: 'Dagas Dobles' },
+            { lvl: 3, icon: '🔨', name: 'Martillo Pesado' },
+            { lvl: 4, icon: '🔥', name: 'Antorcha Solar' },
+            { lvl: 5, icon: '⚡', name: 'Cetro del Rayo' },
+            { lvl: 6, icon: '☄️', name: 'Furia Estelar' }
         ];
 
-        function explosionEfecto(plotIdx, icono) {
-            const plotEl = document.getElementById(`plot-${plotIdx}`);
-            if(!plotEl) return;
-            for(let i=0; i<6; i++) {
+        const ENEMIES = [
+            { name: 'Gusano', icon: '🐛', baseHp: 2, reward: 20, dmg: 1 },
+            { name: 'Escarabajo', icon: '🪲', baseHp: 5, reward: 40, dmg: 1 },
+            { name: 'Araña', icon: '🕷️', baseHp: 9, reward: 65, dmg: 2 },
+            { name: 'Zombi Raíz', icon: '🧟', baseHp: 15, reward: 100, dmg: 2 },
+            { name: 'JEFE REY', icon: '👹', baseHp: 35, reward: 250, dmg: 3, isBoss: true }
+        ];
+
+        const FLOWERS = ['🌻', '🌹', '🌷', '🌺', '🌼', '🪻'];
+
+        let state = {
+            money: 150,
+            lives: 5,
+            maxLives: 5,
+            wave: 1,
+            killsInWave: 0,
+            dmgLevel: 1,
+            tapDamage: 1,
+            upgradeCost: 40,
+            isGameOver: false,
+            plots: []
+        };
+
+        function initPlots() {
+            state.plots = Array.from({ length: 6 }, (_, i) => ({
+                id: i,
+                flower: FLOWERS[i % FLOWERS.length],
+                hasShield: false,
+                enemy: null
+            }));
+        }
+
+        function toast(msg, bg = 'bg-slate-900 text-amber-300 border-amber-400') {
+            const box = document.getElementById('toast-box');
+            const el = document.createElement('div');
+            el.className = `${bg} border-2 px-4 py-1 rounded-full text-xs font-black shadow-xl transition-all duration-300`;
+            el.innerText = msg;
+            box.innerHTML = '';
+            box.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 300);
+            }, 1400);
+        }
+
+        function spawnDmgText(idx, text, isCrit) {
+            const plot = document.getElementById(`plot-${idx}`);
+            if (!plot) return;
+            const el = document.createElement('div');
+            el.className = `dmg-number absolute top-1/3 left-1/2 font-black z-30 whitespace-nowrap drop-shadow-[0_2px_2px_rgba(0,0,0,0.9)] ${isCrit ? 'text-xl text-yellow-300' : 'text-base text-white'}`;
+            el.innerText = text;
+            plot.appendChild(el);
+            setTimeout(() => el.remove(), 650);
+        }
+
+        function spawnBurst(idx, emoji) {
+            const plot = document.getElementById(`plot-${idx}`);
+            if (!plot) return;
+            for (let i = 0; i < 6; i++) {
                 const p = document.createElement('div');
-                p.className = 'absolute text-xl particula-explosion z-30';
-                p.innerText = icono;
-                const tx = (Math.random() - 0.5) * 120;
-                const ty = (Math.random() - 0.5) * 120;
-                p.style.setProperty('--tx', `${tx}px`);
-                p.style.setProperty('--ty', `${ty}px`);
-                plotEl.appendChild(p);
-                setTimeout(() => p.remove(), 500);
+                p.className = 'particle absolute top-1/2 left-1/2 text-lg z-30';
+                p.innerText = emoji;
+                const angle = (Math.PI * 2 * i) / 6;
+                const dist = 45 + Math.random() * 25;
+                p.style.setProperty('--tx', `${Math.cos(angle) * dist}px`);
+                p.style.setProperty('--ty', `${Math.sin(angle) * dist}px`);
+                plot.appendChild(p);
+                setTimeout(() => p.remove(), 450);
             }
         }
 
-        function golpearEnemigo(idx) {
+        function handlePlotTap(idx) {
+            if (state.isGameOver) return;
             const p = state.plots[idx];
-            if (!p.enemigo) return;
+            if (!p.enemy) return;
 
-            p.enemigo.hp -= 1;
-            const el = document.getElementById(`plot-${idx}`);
-            if(el) {
-                el.classList.add('enemigo-herido');
-                setTimeout(() => el.classList.remove('enemigo-herido'), 200);
+            // 20% probabilidad de golpe crítico (x2 de daño)
+            const isCrit = Math.random() < 0.20;
+            const finalDamage = isCrit ? state.tapDamage * 2 : state.tapDamage;
+
+            p.enemy.hp -= finalDamage;
+            spawnDmgText(idx, isCrit ? `💥 -${finalDamage}` : `-${finalDamage}`, isCrit);
+
+            const plotEl = document.getElementById(`plot-${idx}`);
+            if (plotEl) {
+                plotEl.classList.remove('enemy-hit');
+                void plotEl.offsetWidth;
+                plotEl.classList.add('enemy-hit');
             }
 
-            if (p.enemigo.hp <= 0) {
-                explosionEfecto(idx, '💥');
-                state.money += p.enemigo.recompensa;
-                p.enemigo = null;
-            }
-            renderBattle();
-        }
+            if (p.enemy.hp <= 0) {
+                spawnBurst(idx, p.enemy.isBoss ? '👑' : '💥');
+                state.money += p.enemy.reward;
+                state.killsInWave++;
+                p.enemy = null;
 
-        function comprarArma(tipo) {
-            if (tipo === 'torre' && state.money >= 50) {
-                state.money -= 50;
-                // Añade defensa automática a una parcela aleatoria
-                const libres = state.plots.filter(p => p.tipo === 'flor');
-                if(libres.length > 0) {
-                    libres[0].tipo = 'defensa';
+                // Avanzar de oleada cada 5 enemigos derrotados
+                if (state.killsInWave >= 5) {
+                    state.killsInWave = 0;
+                    state.wave++;
+                    toast(`🔥 ¡OLEADA ${state.wave}!`, 'bg-amber-400 text-slate-950 border-white');
                 }
-            } else if (tipo === 'bomba' && state.money >= 80) {
-                state.money -= 80;
-                // Mata a todos los enemigos actuales en pantalla de golpe
-                state.plots.forEach((p, idx) => {
-                    if(p.enemigo) {
-                        explosionEfecto(idx, '🔥');
-                        state.money += p.enemigo.recompensa;
-                        p.enemigo = null;
-                    }
-                });
-            } else if (tipo === 'reparar' && state.money >= 60) {
-                state.money -= 60;
-                state.lives = Math.min(5, state.lives + 2);
             }
-            renderBattle();
+
+            renderAll();
         }
 
-        function repararJardin() {
-            comprarArma('reparar');
+        function upgradeDamage() {
+            if (state.money < state.upgradeCost) {
+                toast(`Necesitas 🪙 ${state.upgradeCost}`, 'bg-rose-600 text-white border-white');
+                return;
+            }
+            state.money -= state.upgradeCost;
+            state.dmgLevel++;
+            state.tapDamage += 1;
+            state.upgradeCost = Math.round(state.upgradeCost * 1.45);
+
+            const w = WEAPONS[Math.min(WEAPONS.length - 1, state.dmgLevel - 1)];
+            toast(`⬆️ ¡${w.name}! Daño: ${state.tapDamage}`, 'bg-emerald-500 text-slate-950 border-white');
+            renderAll();
         }
 
-        function renderBattle() {
+        function buyCactus() {
+            if (state.money < 50) {
+                toast('Necesitas 🪙 50', 'bg-rose-600 text-white border-white');
+                return;
+            }
+            const target = state.plots.find(p => !p.hasShield && !p.enemy);
+            if (!target) {
+                toast('No hay parcelas libres sin escudo', 'bg-slate-800 text-white border-slate-500');
+                return;
+            }
+            state.money -= 50;
+            target.hasShield = true;
+            toast('🌵 ¡Escudo colocado!', 'bg-emerald-500 text-slate-950 border-white');
+            renderAll();
+        }
+
+        function useSuperWeapon(type) {
+            const cost = 80;
+            if (state.money < cost) {
+                toast('Necesitas 🪙 80', 'bg-rose-600 text-white border-white');
+                return;
+            }
+            const activeEnemies = state.plots.filter(p => p.enemy);
+            if (activeEnemies.length === 0) {
+                toast('No hay enemigos en pantalla', 'bg-slate-800 text-white border-slate-500');
+                return;
+            }
+
+            state.money -= cost;
+            state.plots.forEach((p, idx) => {
+                const el = document.getElementById(`plot-${idx}`);
+                if (el) {
+                    el.classList.add('super-flash');
+                    setTimeout(() => el.classList.remove('super-flash'), 400);
+                }
+                if (p.enemy) {
+                    spawnBurst(idx, '⚡');
+                    state.money += p.enemy.reward;
+                    p.enemy = null;
+                }
+            });
+            toast('⚡ ¡RAYO LÁSER DEVASTADOR!', 'bg-indigo-500 text-white border-white');
+            renderAll();
+        }
+
+        function healGarden() {
+            if (state.lives >= state.maxLives) {
+                toast('Salud del jardín al máximo ❤️', 'bg-slate-800 text-white border-slate-500');
+                return;
+            }
+            if (state.money < 60) {
+                toast('Necesitas 🪙 60', 'bg-rose-600 text-white border-white');
+                return;
+            }
+            state.money -= 60;
+            state.lives = Math.min(state.maxLives, state.lives + 2);
+            toast('💖 +2 Vidas restauradas', 'bg-rose-500 text-white border-white');
+            renderAll();
+        }
+
+        function resetGame() {
+            state = {
+                money: 150,
+                lives: 5,
+                maxLives: 5,
+                wave: 1,
+                killsInWave: 0,
+                dmgLevel: 1,
+                tapDamage: 1,
+                upgradeCost: 40,
+                isGameOver: false,
+                plots: []
+            };
+            initPlots();
+            document.getElementById('gameover-modal').classList.add('hidden');
+            renderAll();
+        }
+
+        function renderAll() {
             document.getElementById('hud-money').innerText = state.money;
-            document.getElementById('hud-lives').innerText = `${state.lives} / 5`;
+            document.getElementById('hud-lives').innerText = `${state.lives}/${state.maxLives}`;
             document.getElementById('hud-wave').innerText = state.wave;
+            document.getElementById('hud-dmg').innerText = state.tapDamage;
+
+            const currentWeapon = WEAPONS[Math.min(WEAPONS.length - 1, state.dmgLevel - 1)];
+            document.getElementById('hud-weapon-icon').innerText = currentWeapon.icon;
+            document.getElementById('btn-weapon-icon').innerText = currentWeapon.icon;
+            document.getElementById('btn-dmg-lvl').innerText = state.dmgLevel;
+            document.getElementById('btn-dmg-cost').innerText = state.upgradeCost;
+
+            const btnUpgrade = document.getElementById('btn-upgrade');
+            if (state.money >= state.upgradeCost) {
+                btnUpgrade.classList.add('animate-pulse');
+            } else {
+                btnUpgrade.classList.remove('animate-pulse');
+            }
 
             const grid = document.getElementById('farm-grid');
             grid.innerHTML = '';
 
             state.plots.forEach((p, idx) => {
-                let contenido = '';
-                if (p.enemigo) {
-                    contenido = `
-                        <div class="text-5xl animate-bounce filter drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">${p.enemigo.icono}</div>
-                        <div class="absolute top-2 bg-rose-600 text-white font-black text-xs px-2 py-0.5 rounded-full border border-white">HP: ${p.enemigo.hp}</div>
+                let inner = '';
+                let borderClass = 'border-amber-950/90';
+
+                if (p.enemy) {
+                    const hpPercent = Math.max(0, (p.enemy.hp / p.enemy.maxHp) * 100);
+                    borderClass = p.enemy.isBoss ? 'border-purple-400 ring-2 ring-purple-500' : 'border-rose-500';
+                    inner = `
+                        ${p.enemy.isBoss ? '<span class="absolute -top-2.5 bg-purple-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full border border-white shadow">JEFE</span>' : ''}
+                        <span class="${p.enemy.isBoss ? 'text-5xl' : 'text-4xl'} animate-bounce drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">${p.enemy.icon}</span>
+                        <div class="w-4/5 h-2 bg-slate-950 rounded-full overflow-hidden mt-1.5 border border-white/20">
+                            <div class="h-full ${p.enemy.isBoss ? 'bg-purple-400' : 'bg-rose-500'} transition-all duration-100" style="width: ${hpPercent}%"></div>
+                        </div>
+                        <span class="text-[10px] font-black text-white mt-0.5">${p.enemy.hp} HP</span>
                     `;
-                } else if (p.tipo === 'defensa') {
-                    contenido = `<span class="text-5xl">🌵</span><span class="absolute bottom-2 text-[10px] font-black text-emerald-300">DEFENSA</span>`;
+                } else if (p.hasShield) {
+                    borderClass = 'border-emerald-400';
+                    inner = `
+                        <span class="text-4xl drop-shadow">🌵</span>
+                        <span class="text-[9px] font-black bg-emerald-950/80 text-emerald-300 px-1.5 py-0.5 rounded mt-1">ESCUDO</span>
+                    `;
                 } else {
-                    contenido = `<span class="text-5xl">🌻</span><span class="absolute bottom-2 text-[10px] font-black text-amber-200">FLOR SANA</span>`;
+                    inner = `
+                        <span class="text-4xl opacity-90 drop-shadow">${p.flower}</span>
+                    `;
                 }
 
                 grid.innerHTML += `
-                    <div id="plot-${idx}" onclick="golpearEnemigo(${idx})" 
-                         class="plot-battle aspect-square rounded-2xl border-2 ${p.enemigo ? 'border-rose-500 animate-pulse' : 'border-amber-900'} flex flex-col items-center justify-center relative cursor-pointer">
-                        ${contenido}
+                    <div id="plot-${idx}" onclick="handlePlotTap(${idx})" 
+                         class="plot-tile aspect-square rounded-2xl border-2 ${borderClass} flex flex-col items-center justify-center relative cursor-pointer">
+                        ${inner}
                     </div>
                 `;
             });
         }
 
-        // Sistema de oleadas y ataques enemigos automáticos en tiempo real
+        // Bucle de aparición y ataque de enemigos (cada 2.8 segundos)
         setInterval(() => {
-            if (state.lives <= 0) return;
+            if (state.isGameOver) return;
 
-            // Aparecer enemigos en parcelas libres
+            // 1. Enemigos existentes atacan las parcelas
             state.plots.forEach(p => {
-                if (!p.enemigo && Math.random() < 0.35) {
-                    const template = ENEMIGOS[Math.floor(Math.random() * Math.min(ENEMIGOS.length, state.wave))];
-                    p.enemigo = { ...template, hp: template.hp + Math.floor(state.wave / 2) };
-                } else if (p.enemigo) {
-                    // El enemigo ataca la flor o defensa
-                    if (p.tipo === 'defensa') {
-                        p.tipo = 'flor'; // La defensa frena un ataque
-                        p.enemigo.hp -= 1;
-                        if(p.enemigo.hp <= 0) p.enemigo = null;
+                if (p.enemy) {
+                    if (p.hasShield) {
+                        p.hasShield = false;
+                        p.enemy.hp -= state.tapDamage;
+                        if (p.enemy.hp <= 0) p.enemy = null;
                     } else {
-                        state.lives -= p.enemigo.dao;
-                        if (state.lives <= 0) {
-                            state.lives = 0;
-                            alert('💥 ¡El huerto fue destruido! Reiniciando defensa...');
-                            location.reload();
-                        }
+                        state.lives = Math.max(0, state.lives - p.enemy.dmg);
                     }
                 }
             });
 
-            // Subir de oleada cada cierto tiempo
-            state.wave++;
-            renderBattle();
-        }, 5000);
+            if (state.lives <= 0) {
+                state.isGameOver = true;
+                document.getElementById('final-wave').innerText = state.wave;
+                document.getElementById('gameover-modal').classList.remove('hidden');
+                renderAll();
+                return;
+            }
 
-        renderBattle();
+            // 2. Generar nuevos enemigos en parcelas libres
+            const emptyPlots = state.plots.filter(p => !p.enemy);
+            if (emptyPlots.length > 0 && Math.random() < 0.75) {
+                const target = emptyPlots[Math.floor(Math.random() * emptyPlots.length)];
+                
+                // Cada 5 oleadas puede salir un Jefe
+                const spawnBoss = (state.wave % 5 === 0) && !state.plots.some(pl => pl.enemy && pl.enemy.isBoss);
+                let template;
+                
+                if (spawnBoss) {
+                    template = ENEMIES[ENEMIES.length - 1];
+                } else {
+                    const maxIdx = Math.min(ENEMIES.length - 2, Math.floor(state.wave / 2));
+                    template = ENEMIES[Math.floor(Math.random() * (maxIdx + 1))];
+                }
+
+                const scaledHp = template.baseHp + Math.floor(state.wave * 1.5);
+                target.enemy = {
+                    ...template,
+                    hp: scaledHp,
+                    maxHp: scaledHp
+                };
+            }
+
+            renderAll();
+        }, 2800);
+
+        initPlots();
+        renderAll();
     </script>
 </body>
 </html>

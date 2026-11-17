@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,6 +12,15 @@
             50% { transform: translateY(-5px); }
         }
         .planta-animada { animation: flotar 3s ease-in-out infinite; }
+
+        @keyframes flotarArriba {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
+        }
+        .notificacion-flotante {
+            animation: flotarArriba 1s ease-out forwards;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-b from-teal-900 via-emerald-950 to-stone-950 text-amber-50 min-h-screen font-sans">
@@ -24,7 +34,7 @@
                 <h1 class="text-3xl sm:text-4xl font-black text-emerald-300 flex items-center justify-center sm:justify-start gap-3 drop-shadow">
                     🌸 Evelin's Garden 🌿
                 </h1>
-                <p class="text-emerald-200 text-sm mt-1 font-medium">¡Cultiva, cuida y haz florecer tu propio oasis verde!</p>
+                <p class="text-emerald-200 text-sm mt-1 font-medium">¡Tu vivero realista: las plantas crecen y consumen agua con el tiempo real!</p>
             </div>
             <div class="mt-4 sm:mt-0 bg-emerald-950/80 px-6 py-3 rounded-2xl border-2 border-amber-400/60 flex items-center gap-3 shadow-inner">
                 <span class="text-3xl animate-bounce">🪙</span>
@@ -62,16 +72,17 @@
 
     </div>
 
-    <!-- Script del Juego con Diseños Visuales y Emojis -->
+    <!-- Script del Juego con Tiempo Real Persistente -->
     <script>
         const catalogosemillas = [
-            { tipo: "Cactus", nombre: "Cactus Sonriente", icono: "🌵", costo: 30, valorVenta: 80, descripcion: "Resistente y alegre." },
+            { tipo: "Cactus", nombre: "Cactus Sonriente", icono: "🌵", costo: 30, valorVenta: 80, descripcion: "Resistente y aguanta sequías." },
             { tipo: "Monstera", nombre: "Monstera Elegante", icono: "🌿", costo: 60, valorVenta: 150, descripcion: "Hojas grandes y exóticas." },
-            { tipo: "Orquidea", nombre: "Orquídea Mágica", icono: "🌸", costo: 100, valorVenta: 280, descripcion: "Florece con mucho amor." }
+            { tipo: "Orquidea", nombre: "Orquídea Mágica", icono: "🌸", costo: 100, valorVenta: 280, descripcion: "Delicada pero muy valiosa." }
         ];
 
         let gameState = {
             money: 150,
+            lastUpdate: Date.now(),
             plants: [
                 { id: 1, tipo: "Cactus", etapa: "Brote 🌱", salud: 100, humedad: 80, nutrientes: 80, progreso: 10 },
                 { id: 2, tipo: null, salud: 0, humedad: 0, nutrientes: 0, progreso: 0 }
@@ -80,11 +91,59 @@
 
         function cargarJuego() {
             const saved = localStorage.getItem('evelins_garden_save');
-            if (saved) gameState = JSON.parse(saved);
+            if (saved) {
+                gameState = JSON.parse(saved);
+                calcularProgresoAusente(); // Calcula el tiempo que pasó mientras la pestaña estaba cerrada
+            }
         }
 
         function guardarJuego() {
+            gameState.lastUpdate = Date.now();
             localStorage.setItem('evelins_garden_save', JSON.stringify(gameState));
+        }
+
+        // Lógica realista: Simula el tiempo transcurrido cuando el usuario no estaba jugando
+        function calcularProgresoAusente() {
+            const ahora = Date.now();
+            const segundosPasados = Math.floor((ahora - gameState.lastUpdate) / 1000);
+            
+            if (segundosPasados <= 5) return; // Si pasó poco tiempo, no hace falta recalcular
+
+            // Por cada 3 segundos que pasaron offline, equivale a un "ciclo" del juego
+            const ciclos = Math.floor(segundosPasados / 3);
+
+            gameState.plants.forEach(p => {
+                if (p.tipo !== null && p.progreso < 100 && p.salud > 0) {
+                    // Pierden humedad y nutrientes proporcionalmente al tiempo fuera
+                    p.humedad = Math.max(0, p.humedad - (ciclos * 3));
+                    p.nutrientes = Math.max(0, p.nutrientes - (ciclos * 2));
+
+                    if (p.humedad <= 0 || p.nutrientes <= 0) {
+                        p.salud = Math.max(0, p.salud - (ciclos * 5));
+                    }
+
+                    if (p.salud > 20 && p.humedad > 10) {
+                        p.progreso = Math.min(100, p.progreso + (ciclos * 2));
+                        if (p.progreso >= 50 && p.etapa.includes("Brote")) p.etapa = "Creciendo 🌿";
+                        if (p.progreso >= 100) p.etapa = "Madura ✨";
+                    } else if (p.salud <= 0) {
+                        p.etapa = "Marchita 🥀";
+                    }
+                }
+            });
+            guardarJuego();
+        }
+
+        function mostrarEfectoFlotante(index, texto, colorClase) {
+            const tarjeta = document.getElementById(`maceta-${index}`);
+            if (!tarjeta) return;
+
+            const flotante = document.createElement('div');
+            flotante.className = `notificacion-flotante absolute top-4 right-6 font-black text-sm px-3 py-1 rounded-full shadow-lg z-20 ${colorClase}`;
+            flotante.innerText = texto;
+            
+            tarjeta.appendChild(flotante);
+            setTimeout(() => flotante.remove(), 1000);
         }
 
         function renderizarTienda() {
@@ -129,53 +188,53 @@
                 } else {
                     const semillaInfo = catalogosemillas.find(s => s.tipo === plant.tipo);
                     let esMadura = plant.progreso >= 100;
+                    let estaMuerta = plant.salud <= 0;
                     
-                    // Elegir icono según el progreso
                     let iconoActual = semillaInfo.icono;
-                    if (plant.progreso < 50) iconoActual = "🌱";
+                    if (estaMuerta) iconoActual = "🥀";
+                    else if (plant.progreso < 50) iconoActual = "🌱";
                     else if (plant.progreso < 100) iconoActual = "🌿";
-                    else iconoActual = semillaInfo.icono;
 
                     container.innerHTML += `
-                        <div class="bg-emerald-950/90 border-2 border-emerald-700 rounded-3xl p-5 flex flex-col justify-between shadow-xl relative overflow-hidden">
-                            <!-- Visual de la Planta -->
+                        <div id="maceta-${index}" class="bg-emerald-950/90 border-2 ${estaMuerta ? 'border-rose-600' : 'border-emerald-700'} rounded-3xl p-5 flex flex-col justify-between shadow-xl relative overflow-hidden">
                             <div class="flex items-center gap-4">
-                                <div class="w-16 h-16 bg-emerald-900/80 rounded-2xl flex items-center justify-center text-4xl shadow-inner planta-animada border border-emerald-600">
+                                <div class="w-16 h-16 bg-emerald-900/80 rounded-2xl flex items-center justify-center text-4xl shadow-inner ${estaMuerta ? '' : 'planta-animada'} border border-emerald-600">
                                     ${iconoActual}
                                 </div>
                                 <div class="flex-1">
-                                    <div class="flex justify-between items-start">
-                                        <h3 class="font-black text-lg text-emerald-100">${semillaInfo.nombre}</h3>
-                                    </div>
-                                    <span class="inline-block text-[11px] px-3 py-1 rounded-full font-extrabold mt-1 ${esMadura ? 'bg-amber-400 text-stone-950 shadow-md animate-pulse' : 'bg-emerald-800 text-emerald-200'}">
-                                        ${esMadura ? '✨ ¡Lista para cosechar!' : plant.etapa}
+                                    <h3 class="font-black text-lg text-emerald-100">${semillaInfo.nombre}</h3>
+                                    <span class="inline-block text-[11px] px-3 py-1 rounded-full font-extrabold mt-1 ${estaMuerta ? 'bg-rose-600 text-white' : (esMadura ? 'bg-amber-400 text-stone-950 shadow-md animate-pulse' : 'bg-emerald-800 text-emerald-200')}">
+                                        ${estaMuerta ? '❌ ¡Se marchitó!' : (esMadura ? '✨ ¡Lista para cosechar!' : plant.etapa)}
                                     </span>
                                 </div>
                             </div>
 
-                            <!-- Barras de Estado -->
                             <div class="mt-4 space-y-2 bg-emerald-950/50 p-3 rounded-2xl border border-emerald-900">
                                 <div>
-                                    <div class="flex justify-between text-xs text-emerald-300 font-bold mb-1"><span>💧 Humedad</span><span>${Math.round(plant.humedad)}%</span></div>
-                                    <div class="w-full bg-emerald-900 rounded-full h-2.5 overflow-hidden"><div class="bg-blue-400 h-2.5 transition-all duration-500 rounded-full" style="width: ${plant.humedad}%"></div></div>
+                                    <div class="flex justify-between text-xs text-emerald-300 font-bold mb-1"><span>❤️ Salud</span><span>${Math.round(plant.salud)}%</span></div>
+                                    <div class="w-full bg-emerald-900 rounded-full h-2 overflow-hidden"><div class="bg-rose-500 h-2 transition-all duration-500 rounded-full" style="width: ${plant.salud}%"></div></div>
                                 </div>
                                 <div>
-                                    <div class="flex justify-between text-xs text-emerald-300 font-bold mb-1"><span>✨ Nutrientes</span><span>${Math.round(plant.nutrientes)}%</span></div>
-                                    <div class="w-full bg-emerald-900 rounded-full h-2.5 overflow-hidden"><div class="bg-amber-400 h-2.5 transition-all duration-500 rounded-full" style="width: ${plant.nutrientes}%"></div></div>
+                                    <div class="flex justify-between text-xs text-emerald-300 font-bold mb-1"><span>💧 Humedad</span><span>${Math.round(plant.humedad)}%</span></div>
+                                    <div class="w-full bg-emerald-900 rounded-full h-2 overflow-hidden"><div class="bg-blue-400 h-2 transition-all duration-500 rounded-full" style="width: ${plant.humedad}%"></div></div>
                                 </div>
                                 <div>
                                     <div class="flex justify-between text-xs text-emerald-300 font-bold mb-1"><span>🌱 Crecimiento</span><span>${Math.round(plant.progreso)}%</span></div>
-                                    <div class="w-full bg-emerald-900 rounded-full h-2.5 overflow-hidden"><div class="bg-emerald-400 h-2.5 transition-all duration-500 rounded-full" style="width: ${plant.progreso}%"></div></div>
+                                    <div class="w-full bg-emerald-900 rounded-full h-2 overflow-hidden"><div class="bg-emerald-400 h-2 transition-all duration-500 rounded-full" style="width: ${plant.progreso}%"></div></div>
                                 </div>
                             </div>
 
-                            <!-- Botones de Acción -->
                             <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-emerald-900">
-                                <button onclick="regar(${index})" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-2 rounded-xl transition shadow flex items-center justify-center gap-1">💧 Regar</button>
-                                <button onclick="alimentar(${index})" class="bg-amber-700 hover:bg-amber-600 text-white font-black text-xs py-2 rounded-xl transition shadow flex items-center justify-center gap-1">🍂 Abonar</button>
-                                ${esMadura 
-                                    ? `<button onclick="cosechar(${index})" class="bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-black text-xs py-2 rounded-xl transition shadow flex items-center justify-center gap-1">💰 Vender</button>`
-                                    : `<button onclick="podar(${index})" class="bg-purple-700 hover:bg-purple-600 text-white font-black text-xs py-2 rounded-xl transition shadow flex items-center justify-center gap-1">✂️ Podar</button>`
+                                ${estaMuerta 
+                                    ? `<button onclick="limpiarMaceta(${index})" class="col-span-3 bg-rose-700 hover:bg-rose-600 text-white font-black text-xs py-2 rounded-xl transition shadow">🧹 Limpiar Maceta</button>`
+                                    : `
+                                        <button onclick="regar(${index})" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-2 rounded-xl transition shadow flex items-center justify-center gap-1">💧 Regar</button>
+                                        <button onclick="alimentar(${index})" class="bg-amber-700 hover:bg-amber-600 text-white font-black text-xs py-2 rounded-xl transition shadow flex items-center justify-center gap-1">🍂 Abonar</button>
+                                        ${esMadura 
+                                            ? `<button onclick="cosechar(${index})" class="bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-black text-xs py-2 rounded-xl transition shadow flex items-center justify-center gap-1">💰 Vender</button>`
+                                            : `<button onclick="podar(${index})" class="bg-purple-700 hover:bg-purple-600 text-white font-black text-xs py-2 rounded-xl transition shadow flex items-center justify-center gap-1">✂️ Podar</button>`
+                                        }
+                                    `
                                 }
                             </div>
                         </div>
@@ -211,14 +270,17 @@
 
         function regar(index) {
             gameState.plants[index].humedad = 100;
+            if (gameState.plants[index].salud < 100) gameState.plants[index].salud = Math.min(100, gameState.plants[index].salud + 15);
             guardarJuego();
             actualizarUI();
+            mostrarEfectoFlotante(index, "+💧 ¡Agua!", "bg-blue-500 text-white");
         }
 
         function alimentar(index) {
             gameState.plants[index].nutrientes = 100;
             guardarJuego();
             actualizarUI();
+            mostrarEfectoFlotante(index, "+🍂 ¡Abono!", "bg-amber-600 text-white");
         }
 
         function podar(index) {
@@ -228,6 +290,7 @@
             if (p.progreso >= 100) p.etapa = "Madura ✨";
             guardarJuego();
             actualizarUI();
+            mostrarEfectoFlotante(index, "✂️ ¡Podada!", "bg-purple-600 text-white");
         }
 
         function cosechar(index) {
@@ -235,6 +298,15 @@
             const semillaInfo = catalogosemillas.find(s => s.tipo === p.tipo);
             gameState.money += semillaInfo.valorVenta;
 
+            mostrarEfectoFlotante(index, `+🪙 ${semillaInfo.valorVenta}`, "bg-amber-400 text-stone-950 font-black");
+
+            gameState.plants[index] = { id: p.id, tipo: null, salud: 0, humedad: 0, nutrientes: 0, progreso: 0 };
+            guardarJuego();
+            setTimeout(() => actualizarUI(), 400);
+        }
+
+        function limpiarMaceta(index) {
+            let p = gameState.plants[index];
             gameState.plants[index] = { id: p.id, tipo: null, salud: 0, humedad: 0, nutrientes: 0, progreso: 0 };
             guardarJuego();
             actualizarUI();
@@ -252,17 +324,24 @@
             actualizarUI();
         }
 
+        // Bucle en tiempo real mientras el juego está abierto
         setInterval(() => {
             let cambio = false;
             gameState.plants.forEach(p => {
-                if (p.tipo !== null && p.progreso < 100) {
-                    p.humedad = Math.max(0, p.humedad - 3);
-                    p.nutrientes = Math.max(0, p.nutrineos = p.nutrientes - 2);
+                if (p.tipo !== null && p.progreso < 100 && p.salud > 0) {
+                    p.humedad = Math.max(0, p.humedad - 2);
+                    p.nutrientes = Math.max(0, p.nutrientes - 1);
 
-                    if (p.humedad > 15) {
-                        p.progreso = Math.min(100, p.progreso + 2);
+                    if (p.humedad <= 10 || p.nutrientes <= 5) {
+                        p.salud = Math.max(0, p.salud - 4);
+                    }
+
+                    if (p.salud > 20 && p.humedad > 10) {
+                        p.progreso = Math.min(100, p.progreso + 1.5);
                         if (p.progreso >= 50 && p.etapa.includes("Brote")) p.etapa = "Creciendo 🌿";
                         if (p.progreso >= 100) p.etapa = "Madura ✨";
+                    } else if (p.salud <= 0) {
+                        p.etapa = "Marchita 🥀";
                     }
                     cambio = true;
                 }
@@ -271,7 +350,7 @@
                 guardarJuego();
                 actualizarUI();
             }
-        }, 2500);
+        }, 3000);
 
         function actualizarUI() {
             renderizarTienda();

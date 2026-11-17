@@ -24,67 +24,65 @@
 </head>
 <body class="bg-gradient-to-b from-teal-900 via-emerald-950 to-stone-950 text-amber-50 min-h-screen font-sans">
 
-    <!-- Contenedor Principal -->
     <div class="max-w-4xl mx-auto px-4 py-8">
         
-        <!-- Cabecera Temática -->
+        <!-- Cabecera -->
         <header class="bg-emerald-900/90 border-4 border-emerald-600 rounded-3xl p-6 mb-8 shadow-2xl flex flex-col sm:flex-row justify-between items-center backdrop-blur-md gap-4">
             <div class="text-center sm:text-left">
                 <h1 class="text-3xl sm:text-4xl font-black text-emerald-300 flex items-center justify-center sm:justify-start gap-3 drop-shadow">
                     🌸 Evelin's Garden 🌿
                 </h1>
-                <p class="text-emerald-200 text-sm mt-1 font-medium">¡Vivero realista con clima dinámico y tiempo real!</p>
+                <p class="text-emerald-200 text-sm mt-1 font-medium">¡Vivero realista con clima dinámico y macetas especiales!</p>
             </div>
             
             <div class="flex items-center gap-4">
-                <!-- Indicador de Clima Actual -->
                 <div id="weather-banner" class="bg-emerald-950/80 px-4 py-3 rounded-2xl border-2 border-emerald-600 flex items-center gap-3 shadow-inner">
                     <span id="weather-icon" class="text-2xl">☀️</span>
                     <div>
-                        <p class="text-[10px] text-emerald-400 uppercase font-black tracking-widest">Clima Actual</p>
+                        <p class="text-[10px] text-emerald-400 uppercase font-black tracking-widest">Clima</p>
                         <p id="weather-name" class="text-xs font-extrabold text-emerald-200">Soleado</p>
                     </div>
                 </div>
 
-                <!-- Monedas -->
                 <div class="bg-emerald-950/80 px-5 py-3 rounded-2xl border-2 border-amber-400/60 flex items-center gap-3 shadow-inner">
                     <span class="text-2xl animate-bounce">🪙</span>
                     <div>
-                        <p class="text-[10px] text-amber-300 uppercase font-black tracking-widest">Tus Monedas</p>
+                        <p class="text-[10px] text-amber-300 uppercase font-black tracking-widest">Monedas</p>
                         <p id="player-money" class="text-2xl font-black text-amber-400">150</p>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Tienda de Semillas -->
-        <section class="bg-emerald-900/60 border-2 border-emerald-700/80 rounded-3xl p-6 mb-8 shadow-xl backdrop-blur-sm">
-            <h2 class="text-xl font-bold text-emerald-200 mb-4 flex items-center gap-2">
-                🛍️ Tienda de Semillas y Plantitas
-            </h2>
-            <div id="shop-container" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <!-- Se llena dinámicamente -->
-            </div>
-        </section>
-
-        <!-- El Jardín de Macetas -->
-        <section class="bg-emerald-900/60 border-2 border-emerald-700/80 rounded-3xl p-6 shadow-xl backdrop-blur-sm">
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                <h2 class="text-xl font-bold text-emerald-200 flex items-center gap-2">
-                    🪴 Tu Colección de Macetas
+        <!-- Tienda de Semillas y Macetas -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Semillas -->
+            <section class="bg-emerald-900/60 border-2 border-emerald-700/80 rounded-3xl p-6 shadow-xl backdrop-blur-sm">
+                <h2 class="text-lg font-bold text-emerald-200 mb-4 flex items-center gap-2">
+                    🌱 Tienda de Semillas
                 </h2>
-                <button onclick="comprarMaceta()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black px-5 py-2.5 rounded-2xl text-sm transition shadow-lg transform hover:scale-105">
-                    ✨ Ampliar Vivero (🪙 50)
-                </button>
-            </div>
-            <div id="garden-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Se llena dinámicamente -->
-            </div>
+                <div id="shop-container" class="space-y-3"></div>
+            </section>
+
+            <!-- Macetas Especiales -->
+            <section class="bg-emerald-900/60 border-2 border-emerald-700/80 rounded-3xl p-6 shadow-xl backdrop-blur-sm">
+                <h2 class="text-lg font-bold text-emerald-200 mb-4 flex items-center gap-2">
+                    🏺 Comprar Macetas con Mejoras
+                </h2>
+                <div id="pots-shop-container" class="space-y-3"></div>
+            </section>
+        </div>
+
+        <!-- El Jardín -->
+        <section class="bg-emerald-900/60 border-2 border-emerald-700/80 rounded-3xl p-6 shadow-xl backdrop-blur-sm">
+            <h2 class="text-xl font-bold text-emerald-200 mb-6 flex items-center gap-2">
+                🪴 Tu Colección de Macetas
+            </h2>
+            <div id="garden-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
         </section>
 
     </div>
 
-    <!-- Script del Juego con Sistema de Clima -->
     <script>
         const catalogosemillas = [
             { tipo: "Cactus", nombre: "Cactus Sonriente", icono: "🌵", costo: 30, valorVenta: 80, descripcion: "Resistente y aguanta sequías." },
@@ -92,10 +90,16 @@
             { tipo: "Orquidea", nombre: "Orquídea Mágica", icono: "🌸", costo: 100, valorVenta: 280, descripcion: "Delicada pero muy valiosa." }
         ];
 
+        const catalogoMacetas = [
+            { tipo: "plastico", nombre: "Maceta de Plástico", icono: "🪴", costo: 50, bonusCrecimiento: 1.0, retencionAgua: 1.0, desc: "Estándar sin bonificación." },
+            { tipo: "barro", nombre: "Maceta de Barro", icono: "🏺", costo: 120, bonusCrecimiento: 1.5, retencionAgua: 1.0, desc: "Crece un 50% más rápido." },
+            { tipo: "ceramica", nombre: "Cerámica Premium", icono: "✨", costo: 250, bonusCrecimiento: 1.6, retencionAgua: 0.5, desc: "+60% crecimiento y -50% consumo de agua." }
+        ];
+
         const tiposClima = [
-            { id: "soleado", nombre: "Soleado", icono: "☀️", efectoHumedad: 3, descripcion: "Seca la tierra más rápido." },
-            { id: "nublado", nombre: "Nublado", icono: "☁️", efectoHumedad: 1, descripcion: "Condiciones estables." },
-            { id: "lluvioso", nombre: "Lluvioso", icono: "🌧️", efectoHumedad: -3, descripcion: "¡Riega las plantas automáticamente!" }
+            { id: "soleado", nombre: "Soleado", icono: "☀️", efectoHumedad: 3 },
+            { id: "nublado", nombre: "Nublado", icono: "☁️", efectoHumedad: 1.5 },
+            { id: "lluvioso", nombre: "Lluvioso", icono: "🌧️", efectoHumedad: -3 }
         ];
 
         let gameState = {
@@ -104,13 +108,13 @@
             climaActual: "soleado",
             ultimoCambioClima: Date.now(),
             plants: [
-                { id: 1, tipo: "Cactus", etapa: "Brote 🌱", salud: 100, humedad: 80, nutrientes: 80, progreso: 10 },
-                { id: 2, tipo: null, salud: 0, humedad: 0, nutrientes: 0, progreso: 0 }
+                { id: 1, tipoMaceta: "plastico", tipo: "Cactus", etapa: "Brote 🌱", salud: 100, humedad: 80, nutrientes: 80, progreso: 10 },
+                { id: 2, tipoMaceta: "plastico", tipo: null, salud: 0, humedad: 0, nutrientes: 0, progreso: 0 }
             ]
         };
 
         function cargarJuego() {
-            const saved = localStorage.getItem('evelins_garden_save');
+            const saved = localStorage.getItem('evelins_garden_v2');
             if (saved) {
                 gameState = JSON.parse(saved);
                 verificarClima();
@@ -120,32 +124,25 @@
 
         function guardarJuego() {
             gameState.lastUpdate = Date.now();
-            localStorage.setItem('evelins_garden_save', JSON.stringify(gameState));
+            localStorage.setItem('evelins_garden_v2', JSON.stringify(gameState));
         }
 
-        // Sistema de cambio aleatorio de clima
         function verificarClima() {
             const ahora = Date.now();
-            // Cambia de clima cada 2 minutos (120,000 ms) o si no está definido
             if (!gameState.ultimoCambioClima || (ahora - gameState.ultimoCambioClima > 120000)) {
                 const climaAleatorio = tiposClima[Math.floor(Math.random() * tiposClima.length)];
                 gameState.climaActual = climaAleatorio.id;
                 gameState.ultimoCambioClima = ahora;
                 guardarJuego();
             }
-            actualizarBannerClima();
-        }
-
-        function actualizarBannerClima() {
             const climaInfo = tiposClima.find(c => c.id === gameState.climaActual) || tiposClima[0];
             document.getElementById('weather-icon').innerText = climaInfo.icono;
-            document.getElementById('weather-name').innerText = `${climaInfo.nombre} (${climaInfo.descripcion})`;
+            document.getElementById('weather-name').innerText = climaInfo.nombre;
         }
 
         function calcularProgresoAusente() {
             const ahora = Date.now();
             const segundosPasados = Math.floor((ahora - gameState.lastUpdate) / 1000);
-            
             if (segundosPasados <= 5) return;
 
             const ciclos = Math.floor(segundosPasados / 3);
@@ -153,8 +150,14 @@
 
             gameState.plants.forEach(p => {
                 if (p.tipo !== null && p.progreso < 100 && p.salud > 0) {
-                    // El clima afecta directamente la humedad (si llueve, sube; si hay sol, baja rápido)
-                    p.humedad = Math.min(100, Math.max(0, p.humedad - (ciclos * climaInfo.efectoHumedad)));
+                    const macetaInfo = catalogoMacetas.find(m => m.tipo === (p.tipoMaceta || "plastico"));
+                    
+                    // Si el clima seca la tierra, se aplica la retención de agua de la maceta
+                    let cambioAgua = climaInfo.efectoHumedad > 0 
+                        ? climaInfo.efectoHumedad * macetaInfo.retencionAgua 
+                        : climaInfo.efectoHumedad;
+
+                    p.humedad = Math.min(100, Math.max(0, p.humedad - (ciclos * cambioAgua)));
                     p.nutrientes = Math.max(0, p.nutrientes - (ciclos * 1));
 
                     if (p.humedad <= 10 || p.nutrientes <= 5) {
@@ -162,7 +165,7 @@
                     }
 
                     if (p.salud > 20 && p.humedad > 10) {
-                        p.progreso = Math.min(100, p.progreso + (ciclos * 1.5));
+                        p.progreso = Math.min(100, p.progreso + (ciclos * 1.5 * macetaInfo.bonusCrecimiento));
                         if (p.progreso >= 50 && p.etapa.includes("Brote")) p.etapa = "Creciendo 🌿";
                         if (p.progreso >= 100) p.etapa = "Madura ✨";
                     } else if (p.salud <= 0) {
@@ -176,35 +179,50 @@
         function mostrarEfectoFlotante(index, texto, colorClase) {
             const tarjeta = document.getElementById(`maceta-${index}`);
             if (!tarjeta) return;
-
             const flotante = document.createElement('div');
             flotante.className = `notificacion-flotante absolute top-4 right-6 font-black text-sm px-3 py-1 rounded-full shadow-lg z-20 ${colorClase}`;
             flotante.innerText = texto;
-            
             tarjeta.appendChild(flotante);
             setTimeout(() => flotante.remove(), 1000);
         }
 
-        function renderizarTienda() {
-            const container = document.getElementById('shop-container');
-            container.innerHTML = '';
-            
+        function renderizarTiendas() {
+            // Renderizar Semillas
+            const shopContainer = document.getElementById('shop-container');
+            shopContainer.innerHTML = '';
             catalogosemillas.forEach(semilla => {
-                container.innerHTML += `
-                    <div class="bg-emerald-950/80 p-5 rounded-2xl border-2 border-emerald-800 flex flex-col justify-between hover:border-emerald-500 transition group">
-                        <div class="flex items-center gap-4">
-                            <span class="text-4xl p-3 bg-emerald-900/50 rounded-2xl group-hover:scale-110 transition">${semilla.icono}</span>
+                shopContainer.innerHTML += `
+                    <div class="bg-emerald-950/80 p-3.5 rounded-2xl border border-emerald-800 flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <span class="text-3xl">${semilla.icono}</span>
                             <div>
-                                <h3 class="font-bold text-base text-emerald-100">${semilla.nombre}</h3>
-                                <p class="text-xs text-emerald-400 mt-0.5">${semilla.descripcion}</p>
+                                <h3 class="font-bold text-sm text-emerald-100">${semilla.nombre}</h3>
+                                <p class="text-[11px] text-emerald-400">Vende por: 🪙 ${semilla.valorVenta}</p>
                             </div>
                         </div>
-                        <div class="flex justify-between items-center mt-5 pt-3 border-t border-emerald-900/80">
-                            <span class="text-amber-400 font-black text-lg">🪙 ${semilla.costo}</span>
-                            <button onclick="plantarSemilla('${semilla.tipo}')" class="bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black px-4 py-2 rounded-xl text-xs transition shadow">
-                                Plantar 🪴
-                            </button>
+                        <button onclick="plantarSemilla('${semilla.tipo}')" class="bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black px-3 py-1.5 rounded-xl text-xs transition shadow">
+                            🪙 ${semilla.costo}
+                        </button>
+                    </div>
+                `;
+            });
+
+            // Renderizar Macetas
+            const potsContainer = document.getElementById('pots-shop-container');
+            potsContainer.innerHTML = '';
+            catalogoMacetas.forEach(maceta => {
+                potsContainer.innerHTML += `
+                    <div class="bg-emerald-950/80 p-3.5 rounded-2xl border border-emerald-800 flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <span class="text-3xl">${maceta.icono}</span>
+                            <div>
+                                <h3 class="font-bold text-sm text-amber-200">${maceta.nombre}</h3>
+                                <p class="text-[11px] text-emerald-300">${maceta.desc}</p>
+                            </div>
                         </div>
+                        <button onclick="comprarMaceta('${maceta.tipo}')" class="bg-amber-500 hover:bg-amber-400 text-stone-950 font-black px-3 py-1.5 rounded-xl text-xs transition shadow">
+                            + 🪙 ${maceta.costo}
+                        </button>
                     </div>
                 `;
             });
@@ -216,12 +234,17 @@
             container.innerHTML = '';
 
             gameState.plants.forEach((plant, index) => {
+                const macetaInfo = catalogoMacetas.find(m => m.tipo === (plant.tipoMaceta || "plastico"));
+
                 if (!plant.tipo) {
                     container.innerHTML += `
-                        <div class="bg-emerald-950/40 border-3 border-dashed border-emerald-700/60 rounded-3xl p-6 flex flex-col items-center justify-center text-center h-56 hover:bg-emerald-950/60 transition">
+                        <div class="bg-emerald-950/40 border-2 border-dashed border-emerald-700/60 rounded-3xl p-6 flex flex-col items-center justify-center text-center h-60 relative">
+                            <span class="absolute top-3 left-4 text-xs font-bold bg-emerald-900/90 text-amber-200 px-3 py-1 rounded-full border border-emerald-700">
+                                ${macetaInfo.icono} ${macetaInfo.nombre}
+                            </span>
                             <span class="text-4xl mb-2 opacity-50">🕳️</span>
                             <p class="text-emerald-300 font-bold mb-1">Maceta Vacía</p>
-                            <p class="text-xs text-emerald-400/80">Elige una semilla arriba para comenzar a cultivar.</p>
+                            <p class="text-xs text-emerald-400/80">Planta una semilla para aprovechar su bonificación.</p>
                         </div>
                     `;
                 } else {
@@ -236,6 +259,15 @@
 
                     container.innerHTML += `
                         <div id="maceta-${index}" class="bg-emerald-950/90 border-2 ${estaMuerta ? 'border-rose-600' : 'border-emerald-700'} rounded-3xl p-5 flex flex-col justify-between shadow-xl relative overflow-hidden">
+                            
+                            <!-- Etiqueta del Tipo de Maceta -->
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-[11px] font-bold bg-emerald-900 text-amber-200 px-2.5 py-0.5 rounded-full border border-emerald-700">
+                                    ${macetaInfo.icono} ${macetaInfo.nombre}
+                                </span>
+                                <span class="text-[10px] text-emerald-400 font-bold">Vel: x${macetaInfo.bonusCrecimiento}</span>
+                            </div>
+
                             <div class="flex items-center gap-4">
                                 <div class="w-16 h-16 bg-emerald-900/80 rounded-2xl flex items-center justify-center text-4xl shadow-inner ${estaMuerta ? '' : 'planta-animada'} border border-emerald-600">
                                     ${iconoActual}
@@ -291,7 +323,7 @@
 
             const macetaVacia = gameState.plants.find(p => p.tipo === null);
             if (!macetaVacia) {
-                alert("¡No hay macetas vacías! Compra otra maceta para seguir plantando.");
+                alert("¡No hay macetas vacías! Compra una maceta nueva en la tienda.");
                 return;
             }
 
@@ -303,6 +335,23 @@
             macetaVacia.nutrientes = 90;
             macetaVacia.progreso = 0;
 
+            guardarJuego();
+            actualizarUI();
+        }
+
+        function comprarMaceta(tipoMaceta) {
+            const macetaInfo = catalogoMacetas.find(m => m.tipo === tipoMaceta);
+            if (gameState.money < macetaInfo.costo) {
+                alert(`Te faltan monedas para comprar la ${macetaInfo.nombre}.`);
+                return;
+            }
+            gameState.money -= macetaInfo.costo;
+            gameState.plants.push({ 
+                id: gameState.plants.length + 1, 
+                tipoMaceta: tipoMaceta, 
+                tipo: null, 
+                salud: 0, humedad: 0, nutrientes: 0, progreso: 0 
+            });
             guardarJuego();
             actualizarUI();
         }
@@ -339,31 +388,19 @@
 
             mostrarEfectoFlotante(index, `+🪙 ${semillaInfo.valorVenta}`, "bg-amber-400 text-stone-950 font-black");
 
-            gameState.plants[index] = { id: p.id, tipo: null, salud: 0, humedad: 0, nutrientes: 0, progreso: 0 };
+            // Conserva la maceta comprada al limpiar la planta cosechada
+            gameState.plants[index] = { id: p.id, tipoMaceta: p.tipoMaceta, tipo: null, salud: 0, humedad: 0, nutrientes: 0, progreso: 0 };
             guardarJuego();
             setTimeout(() => actualizarUI(), 400);
         }
 
         function limpiarMaceta(index) {
             let p = gameState.plants[index];
-            gameState.plants[index] = { id: p.id, tipo: null, salud: 0, humedad: 0, nutrientes: 0, progreso: 0 };
+            gameState.plants[index] = { id: p.id, tipoMaceta: p.tipoMaceta, tipo: null, salud: 0, humedad: 0, nutrientes: 0, progreso: 0 };
             guardarJuego();
             actualizarUI();
         }
 
-        function comprarMaceta() {
-            let costoMaceta = 50;
-            if (gameState.money < costoMaceta) {
-                alert("¡Te faltan monedas para comprar otra maceta!");
-                return;
-            }
-            gameState.money -= costoMaceta;
-            gameState.plants.push({ id: gameState.plants.length + 1, tipo: null, salud: 0, humedad: 0, nutrientes: 0, progreso: 0 });
-            guardarJuego();
-            actualizarUI();
-        }
-
-        // Bucle en tiempo real
         setInterval(() => {
             verificarClima();
             const climaInfo = tiposClima.find(c => c.id === gameState.climaActual) || tiposClima[0];
@@ -371,8 +408,13 @@
             let cambio = false;
             gameState.plants.forEach(p => {
                 if (p.tipo !== null && p.progreso < 100 && p.salud > 0) {
-                    // La humedad sube o baja dependiendo del clima actual
-                    p.humedad = Math.min(100, Math.max(0, p.humedad - climaInfo.efectoHumedad));
+                    const macetaInfo = catalogoMacetas.find(m => m.tipo === (p.tipoMaceta || "plastico"));
+                    
+                    let cambioAgua = climaInfo.efectoHumedad > 0 
+                        ? climaInfo.efectoHumedad * macetaInfo.retencionAgua 
+                        : climaInfo.efectoHumedad;
+
+                    p.humedad = Math.min(100, Math.max(0, p.humedad - cambioAgua));
                     p.nutrientes = Math.max(0, p.nutrientes - 1);
 
                     if (p.humedad <= 10 || p.nutrientes <= 5) {
@@ -380,7 +422,7 @@
                     }
 
                     if (p.salud > 20 && p.humedad > 10) {
-                        p.progreso = Math.min(100, p.progreso + 1.5);
+                        p.progreso = Math.min(100, p.progreso + (1.5 * macetaInfo.bonusCrecimiento));
                         if (p.progreso >= 50 && p.etapa.includes("Brote")) p.etapa = "Creciendo 🌿";
                         if (p.progreso >= 100) p.etapa = "Madura ✨";
                     } else if (p.salud <= 0) {
@@ -396,7 +438,7 @@
         }, 3000);
 
         function actualizarUI() {
-            renderizarTienda();
+            renderizarTiendas();
             renderizarJardin();
         }
 

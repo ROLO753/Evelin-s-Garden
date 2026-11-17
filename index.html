@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Jardinería Web</title>
+    <!-- Tailwind CSS para un diseño limpio y responsivo -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-emerald-950 text-slate-100 min-h-screen font-sans">
+
+    <!-- Contenedor Principal -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        
+        <!-- Cabecera -->
+        <header class="flex flex-col sm:flex-row justify-between items-center bg-emerald-900 border border-emerald-700 rounded-2xl p-6 mb-8 shadow-xl">
+            <div>
+                <h1 class="text-3xl font-extrabold text-emerald-300 flex items-center gap-2">🌱 Vivero Virtual</h1>
+                <p class="text-emerald-200 text-sm mt-1">Cuida, poda, alimenta y vende tus plantas.</p>
+            </div>
+            <div class="mt-4 sm:mt-0 bg-emerald-950 px-6 py-3 rounded-xl border border-emerald-600 flex items-center gap-3 shadow-inner">
+                <span class="text-2xl">🪙</span>
+                <div>
+                    <p class="text-xs text-emerald-400 uppercase font-bold tracking-wider">Dinero</p>
+                    <p id="player-money" class="text-2xl font-black text-amber-400">150</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Panel de la Tienda -->
+        <section class="bg-emerald-900/80 border border-emerald-700 rounded-2xl p-6 mb-8 shadow-xl">
+            <h2 class="text-xl font-bold text-emerald-300 mb-4 flex items-center gap-2">🛒 Tienda de Semillas</h2>
+            <div id="shop-container" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Se llena dinámicamente con JS -->
+            </div>
+        </section>
+
+        <!-- Panel del Jardín -->
+        <section class="bg-emerald-900/80 border border-emerald-700 rounded-2xl p-6 shadow-xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-emerald-300 flex items-center gap-2">🌿 Tu Jardín (Macetas)</h2>
+                <button onclick="comprarMaceta()" class="bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition shadow">
+                    + Comprar Maceta (🪙 50)
+                </button>
+            </div>
+            <div id="garden-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Se llena dinámicamente con JS -->
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Script del Juego -->
+    <script>
+        // Datos del Juego
+        const catalogosemillas = [
+            { tipo: "Cactus", nombre: "Cactus del Desierto", costo: 30, valorVenta: 80, tiempoCrecimiento: 30 },
+            { tipo: "Monstera", nombre: "Monstera Deliciosa", costo: 60, valorVenta: 150, tiempoCrecimiento: 50 },
+            { tipo: "Orquidea", nombre: "Orquídea Exótica", costo: 100, valorVenta: 280, tiempoCrecimiento: 80 }
+        ];
+
+        let gameState = {
+            money: 150,
+            macetas: 2, // Número de espacios desbloqueados
+            plants: [
+                { id: 1, tipo: "Cactus", etapa: "Brote", salud: 100, humedad: 80, nutrientes: 80, progreso: 10 },
+                { id: 2, tipo: null, salud: 0, humedad: 0, nutrientes: 0, progreso: 0 }
+            ]
+        };
+
+        // Cargar partida guardada si existe
+        function cargarJuego() {
+            const saved = localStorage.getItem('vivero_save');
+            if (saved) {
+                gameState = JSON.parse(saved);
+            }
+        }
+
+        function guardarJuego() {
+            localStorage.setItem('vivero_save', JSON.stringify(gameState));
+        }
+
+        // Renderizar la Tienda
+        function renderizarTienda() {
+            const container = document.getElementById('shop-container');
+            container.innerHTML = '';
+            
+            catalogosemillas.forEach(semilla => {
+                container.innerHTML += `
+                    <div class="bg-emerald-950 p-4 rounded-xl border border-emerald-800 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-lg text-emerald-200">${semilla.nombre}</h3>
+                            <p class="text-xs text-emerald-400 mt-1">Valor Venta: 🪙 ${semilla.valorVenta}</p>
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-amber-400 font-bold">🪙 ${semilla.costo}</span>
+                            <button onclick="plantarSemilla('${semilla.tipo}')" class="bg-amber-600 hover:bg-amber-500 text-emerald-950 font-extrabold px-3 py-1.5 rounded-lg text-sm transition">
+                                Plantar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Renderizar el Jardín
+        function renderizarJardin() {
+            document.getElementById('player-money').innerText = gameState.money;
+            const container = document.getElementById('garden-container');
+            container.innerHTML = '';
+
+            gameState.plants.forEach((plant, index) => {
+                if (!plant.tipo) {
+                    container.innerHTML += `
+                        <div class="bg-emerald-950 border border-dashed border-emerald-700 rounded-xl p-6 flex flex-col items-center justify-center text-center h-48">
+                            <p class="text-emerald-400 font-medium mb-2">Maceta Vacía</p>
+                            <p class="text-xs text-emerald-500">Selecciona una semilla en la tienda para plantar aquí.</p>
+                        </div>
+                    `;
+                } else {
+                    let esMadura = plant.progreso >= 100;
+                    container.innerHTML += `
+                        <div class="bg-emerald-950 border border-emerald-700 rounded-xl p-5 flex flex-col justify-between shadow-inner">
+                            <div>
+                                <div class="flex justify-between items-start">
+                                    <h3 class="font-bold text-lg text-emerald-200">${plant.tipo}</h3>
+                                    <span class="text-xs px-2.5 py-1 rounded-full font-semibold ${esMadura ? 'bg-amber-500 text-emerald-950' : 'bg-emerald-800 text-emerald-300'}">
+                                        ${esMadura ? '✨ Lista para cosechar' : plant.etapa}
+                                    </span>
+                                </div>
+                                <div class="mt-3 space-y-2">
+                                    <div>
+                                        <div class="flex justify-between text-xs text-emerald-300 mb-1"><span>Humedad</span><span>${Math.round(plant.humedad)}%</span></div>
+                                        <div class="w-full bg-emerald-900 rounded-full h-2 overflow-hidden"><div class="bg-blue-400 h-2 transition-all" style="width: ${plant.humedad}%"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs text-emerald-300 mb-1"><span>Nutrientes</span><span>${Math.round(plant.nutrientes)}%</span></div>
+                                        <div class="w-full bg-emerald-900 rounded-full h-2 overflow-hidden"><div class="bg-amber-500 h-2 transition-all" style="width: ${plant.nutrientes}%"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs text-emerald-300 mb-1"><span>Crecimiento</span><span>${Math.round(plant.progreso)}%</span></div>
+                                        <div class="w-full bg-emerald-900 rounded-full h-2 overflow-hidden"><div class="bg-emerald-400 h-2 transition-all" style="width: ${plant.progreso}%"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-emerald-900">
+                                <button onclick="regar(${index})" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-1.5 rounded-lg transition">Regar</button>
+                                <button onclick="alimentar(${index})" class="bg-amber-700 hover:bg-amber-600 text-white text-xs font-bold py-1.5 rounded-lg transition">Abonar</button>
+                                ${esMadura 
+                                    ? `<button onclick="cosechar(${index})" class="bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black text-xs py-1.5 rounded-lg transition">Vender</button>`
+                                    : `<button onclick="podar(${index})" class="bg-purple-700 hover:bg-purple-600 text-white text-xs font-bold py-1.5 rounded-lg transition">Podar</button>`
+                                }
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // Acciones del juego
+        function plantarSemilla(tipo) {
+            const semillaInfo = catalogosemillas.find(s => s.tipo === tipo);
+            if (gameState.money < semillaInfo.costo) {
+                alert("¡No tienes suficiente dinero!");
+                return;
+            }
+
+            const macetaVacia = gameState.plants.find(p => p.tipo === null);
+            if (!macetaVacia) {
+                alert("No tienes macetas vacías. Compra más macetas.");
+                return;
+            }
+
+            gameState.money -= semillaInfo.costo;
+            macetaVacia.tipo = tipo;
+            macetaVacia.etapa = "Brote";
+            macetaVacia.salud = 100;
+            macetaVacia.humedad = 80;
+            macetaVacia.nutrientes = 80;
+            macetaVacia.progreso = 0;
+
+            guardarJuego();
+            actualizarUI();
+        }
+
+        function regar(index) {
+            gameState.plants[index].humedad = 100;
+            guardarJuego();
+            actualizarUI();
+        }
+
+        function alimentar(index) {
+            gameState.plants[index].nutrientes = 100;
+            guardarJuego();
+            actualizarUI();
+        }
+
+        function podar(index) {
+            let p = gameState.plants[index];
+            p.progreso = Math.min(100, p.progreso + 15);
+            if (p.progreso >= 50 && p.etapa === "Brote") p.etapa = "Creciendo";
+            if (p.progreso >= 100) p.etapa = "Madura";
+            guardarJuego();
+            actualizarUI();
+        }
+
+        function cosechar(index) {
+            let p = gameState.plants[index];
+            const semillaInfo = catalogosemillas.find(s => s.tipo === p.tipo);
+            gameState.money += semillaInfo.valorVenta;
+
+            // Resetear maceta
+            gameState.plants[index] = { id: p.id, tipo: null, salud: 0, humedad: 0, nutrientes: 0, progreso: 0 };
+            guardarJuego();
+            actualizarUI();
+        }
+
+        function comprarMaceta() {
+            let costoMaceta = 50;
+            if (gameState.money < costoMaceta) {
+                alert("No tienes suficiente dinero para otra maceta.");
+                return;
+            }
+            gameState.money -= costoMaceta;
+            gameState.plants.push({ id: gameState.plants.length + 1, tipo: null, salud: 0, humedad: 0, nutrientes: 0, progreso: 0 });
+            guardarJuego();
+            actualizarUI();
+        }
+
+        // Bucle del juego en tiempo real (cada 2 segundos)
+        setInterval(() => {
+            let cambio = false;
+            gameState.plants.forEach(p => {
+                if (p.tipo !== null && p.progreso < 100) {
+                    p.humedad = Math.max(0, p.humedad - 3);
+                    p.nutrientes = Math.max(0, p.nutrientes - 2);
+
+                    if (p.humedad < 20 || p.nutrientes < 20) {
+                        p.salud = Math.max(0, p.salud - 5);
+                    } else if (p.salud < 100) {
+                        p.salud = Math.min(100, p.salud + 2);
+                    }
+
+                    if (p.salud > 40 && p.humedad > 20) {
+                        p.progreso = Math.min(100, p.progreso + 2);
+                        if (p.progreso >= 50 && p.etapa === "Brote") p.etapa = "Creciendo";
+                        if (p.progreso >= 100) p.etapa = "Madura";
+                    }
+                    cambio = true;
+                }
+            });
+            if (cambio) {
+                guardarJuego();
+                actualizarUI();
+            }
+        }, 2000);
+
+        function actualizarUI() {
+            renderizarTienda();
+            renderizarJardin();
+        }
+
+        // Inicializar al cargar la página
+        cargarJuego();
+        actualizarUI();
+    </script>
+</body>
+</html>
